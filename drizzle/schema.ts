@@ -1,4 +1,14 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import {
+  int,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+  decimal,
+  boolean,
+  json,
+} from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,4 +35,78 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Vehicles table - stores vehicle information
+ */
+export const vehicles = mysqlTable("vehicles", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  brand: varchar("brand", { length: 100 }).notNull(),
+  model: varchar("model", { length: 100 }).notNull(),
+  year: int("year").notNull(),
+  category: varchar("category", { length: 50 }).notNull(), // e.g., "sedan", "suv", "sports", "truck"
+  price: decimal("price", { precision: 12, scale: 2 }).notNull(),
+  mileage: int("mileage"), // in kilometers
+  color: varchar("color", { length: 50 }),
+  transmission: varchar("transmission", { length: 50 }), // "manual", "automatic"
+  fuelType: varchar("fuelType", { length: 50 }), // "gasoline", "diesel", "electric", "hybrid"
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdBy: int("createdBy").notNull(), // user id
+});
+
+export type Vehicle = typeof vehicles.$inferSelect;
+export type InsertVehicle = typeof vehicles.$inferInsert;
+
+/**
+ * Vehicle images table - stores image metadata and S3 references
+ */
+export const vehicleImages = mysqlTable("vehicle_images", {
+  id: int("id").autoincrement().primaryKey(),
+  vehicleId: int("vehicleId").notNull(), // references vehicles.id
+  imageUrl: text("imageUrl").notNull(), // S3 CDN URL
+  imageKey: varchar("imageKey", { length: 255 }).notNull(), // S3 key for reference
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isMainImage: boolean("isMainImage").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type VehicleImage = typeof vehicleImages.$inferSelect;
+export type InsertVehicleImage = typeof vehicleImages.$inferInsert;
+
+/**
+ * Vehicle history table - tracks all changes to vehicles
+ */
+export const vehicleHistory = mysqlTable("vehicle_history", {
+  id: int("id").autoincrement().primaryKey(),
+  vehicleId: int("vehicleId").notNull(), // references vehicles.id
+  action: mysqlEnum("action", ["created", "updated", "deleted"]).notNull(),
+  changedBy: int("changedBy").notNull(), // user id
+  changedByName: varchar("changedByName", { length: 255 }),
+  changedByEmail: varchar("changedByEmail", { length: 320 }),
+  changes: json("changes"), // JSON object with before/after values
+  description: text("description"), // Human-readable description of changes
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type VehicleHistory = typeof vehicleHistory.$inferSelect;
+export type InsertVehicleHistory = typeof vehicleHistory.$inferInsert;
+
+/**
+ * Webhook logs table - tracks all webhook requests for audit and debugging
+ */
+export const webhookLogs = mysqlTable("webhook_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  action: varchar("action", { length: 50 }).notNull(), // "create", "delete"
+  status: mysqlEnum("status", ["success", "failed", "pending"]).notNull(),
+  requestData: json("requestData"), // Full request payload
+  responseData: json("responseData"), // Response or error details
+  vehicleId: int("vehicleId"), // references vehicles.id if applicable
+  errorMessage: text("errorMessage"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type WebhookLog = typeof webhookLogs.$inferSelect;
+export type InsertWebhookLog = typeof webhookLogs.$inferInsert;

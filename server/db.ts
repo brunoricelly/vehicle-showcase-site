@@ -1,7 +1,18 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, and, gte, lte, like, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
-import { ENV } from './_core/env';
+import {
+  InsertUser,
+  users,
+  vehicles,
+  vehicleImages,
+  vehicleHistory,
+  webhookLogs,
+  type Vehicle,
+  type VehicleImage,
+  type VehicleHistory,
+  type WebhookLog,
+} from "../drizzle/schema";
+import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -56,8 +67,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.role = user.role;
       updateSet.role = user.role;
     } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
+      values.role = "admin";
+      updateSet.role = "admin";
     }
 
     if (!values.lastSignedIn) {
@@ -84,9 +95,279 @@ export async function getUserByOpenId(openId: string) {
     return undefined;
   }
 
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.openId, openId))
+    .limit(1);
 
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// ============ VEHICLE QUERIES ============
+
+export async function getVehicles(filters?: {
+  category?: string;
+  brand?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+  isActive?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const conditions = [];
+
+  if (filters?.isActive !== undefined) {
+    conditions.push(eq(vehicles.isActive, filters.isActive));
+  }
+
+  if (filters?.category) {
+    conditions.push(eq(vehicles.category, filters.category));
+  }
+
+  if (filters?.brand) {
+    conditions.push(eq(vehicles.brand, filters.brand));
+  }
+
+  if (filters?.minPrice !== undefined) {
+    conditions.push(gte(vehicles.price, filters.minPrice.toString()));
+  }
+
+  if (filters?.maxPrice !== undefined) {
+    conditions.push(lte(vehicles.price, filters.maxPrice.toString()));
+  }
+
+  if (filters?.search) {
+    conditions.push(
+      sql`(${vehicles.title} LIKE ${`%${filters.search}%`} OR ${vehicles.brand} LIKE ${`%${filters.search}%`} OR ${vehicles.model} LIKE ${`%${filters.search}%`})`
+    );
+  }
+
+  const query = db.select().from(vehicles);
+
+  if (conditions.length > 0) {
+    return await query.where(and(...conditions)).orderBy(desc(vehicles.createdAt));
+  }
+
+  return await query.orderBy(desc(vehicles.createdAt));
+}
+
+export async function getVehicleById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db.select().from(vehicles).where(eq(vehicles.id, id)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function createVehicle(data: {
+  title: string;
+  description?: string;
+  brand: string;
+  model: string;
+  year: number;
+  category: string;
+  price: string;
+  mileage?: number;
+  color?: string;
+  transmission?: string;
+  fuelType?: string;
+  createdBy: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(vehicles).values({
+    title: data.title,
+    description: data.description,
+    brand: data.brand,
+    model: data.model,
+    year: data.year,
+    category: data.category,
+    price: data.price as any,
+    mileage: data.mileage,
+    color: data.color,
+    transmission: data.transmission,
+    fuelType: data.fuelType,
+    createdBy: data.createdBy,
+  });
+
+  return { insertId: (result as any).insertId };
+}
+
+export async function updateVehicle(
+  id: number,
+  data: Partial<{
+    title: string;
+    description: string;
+    brand: string;
+    model: string;
+    year: number;
+    category: string;
+    price: string;
+    mileage: number;
+    color: string;
+    transmission: string;
+    fuelType: string;
+    isActive: boolean;
+  }>
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(vehicles).set(data as any).where(eq(vehicles.id, id));
+}
+
+export async function deleteVehicle(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Soft delete by setting isActive to false
+  await db.update(vehicles).set({ isActive: false }).where(eq(vehicles.id, id));
+}
+
+// ============ VEHICLE IMAGE QUERIES ============
+
+export async function getVehicleImages(vehicleId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(vehicleImages)
+    .where(eq(vehicleImages.vehicleId, vehicleId))
+    .orderBy(vehicleImages.displayOrder);
+}
+
+export async function addVehicleImage(data: {
+  vehicleId: number;
+  imageUrl: string;
+  imageKey: string;
+  displayOrder?: number;
+  isMainImage?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(vehicleImages).values({
+    vehicleId: data.vehicleId,
+    imageUrl: data.imageUrl,
+    imageKey: data.imageKey,
+    displayOrder: data.displayOrder || 0,
+    isMainImage: data.isMainImage || false,
+  });
+
+  return { insertId: (result as any).insertId };
+}
+
+export async function deleteVehicleImage(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(vehicleImages).where(eq(vehicleImages.id, id));
+}
+
+export async function setMainImage(vehicleId: number, imageId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Remove main image flag from all images of this vehicle
+  await db
+    .update(vehicleImages)
+    .set({ isMainImage: false })
+    .where(eq(vehicleImages.vehicleId, vehicleId));
+
+  // Set the new main image
+  await db
+    .update(vehicleImages)
+    .set({ isMainImage: true })
+    .where(eq(vehicleImages.id, imageId));
+}
+
+// ============ VEHICLE HISTORY QUERIES ============
+
+export async function getVehicleHistory(vehicleId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(vehicleHistory)
+    .where(eq(vehicleHistory.vehicleId, vehicleId))
+    .orderBy(desc(vehicleHistory.createdAt))
+    .limit(limit);
+}
+
+export async function addVehicleHistory(data: {
+  vehicleId: number;
+  action: "created" | "updated" | "deleted";
+  changedBy: number;
+  changedByName?: string;
+  changedByEmail?: string;
+  changes?: Record<string, any>;
+  description?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const insertData: any = {
+    vehicleId: data.vehicleId,
+    action: data.action,
+    changedBy: data.changedBy,
+  };
+
+  if (data.changedByName !== undefined) insertData.changedByName = data.changedByName;
+  if (data.changedByEmail !== undefined) insertData.changedByEmail = data.changedByEmail;
+  if (data.changes !== undefined) insertData.changes = data.changes; // Drizzle handles JSON serialization
+  if (data.description !== undefined) insertData.description = data.description;
+
+  // Remove id field defensively to ensure Drizzle doesn't try to insert it
+  const { id: _id, ...safeData } = insertData;
+
+  const result = await db.insert(vehicleHistory).values(safeData);
+
+  return { insertId: (result as any).insertId };
+}
+
+// ============ WEBHOOK LOG QUERIES ============
+
+export async function addWebhookLog(data: {
+  action: string;
+  status: "success" | "failed" | "pending";
+  requestData?: Record<string, any>;
+  responseData?: Record<string, any>;
+  vehicleId?: number;
+  errorMessage?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const insertData: any = {
+    action: data.action,
+    status: data.status,
+    vehicleId: data.vehicleId,
+    errorMessage: data.errorMessage,
+  };
+
+  if (data.requestData !== undefined) insertData.requestData = data.requestData;
+  if (data.responseData !== undefined) insertData.responseData = data.responseData;
+
+  const { id: _id, ...safeData } = insertData;
+
+  const result = await db.insert(webhookLogs).values(safeData);
+
+  return { insertId: (result as any).insertId };
+}
+
+export async function getWebhookLogs(limit = 100) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(webhookLogs)
+    .orderBy(desc(webhookLogs.createdAt))
+    .limit(limit);
+}
