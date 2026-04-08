@@ -43,3 +43,32 @@ export const adminProcedure = t.procedure.use(
     });
   }),
 );
+
+// Middleware to check if user's email is authorized for admin access
+const requireAuthorizedEmail = t.middleware(async opts => {
+  const { ctx, next } = opts;
+
+  if (!ctx.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+  }
+
+  // Import here to avoid circular dependencies
+  const { isEmailAuthorized } = await import("../db");
+  const authorized = await isEmailAuthorized(ctx.user.email || "");
+
+  if (!authorized) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Email não está autorizado para acessar o painel administrativo",
+    });
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      user: ctx.user,
+    },
+  });
+});
+
+export const authorizedAdminProcedure = t.procedure.use(requireUser).use(requireAuthorizedEmail);

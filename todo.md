@@ -154,3 +154,33 @@
 - [ ] Testes de CRUD de veículos
 - [ ] Testes de upload de imagens
 - [ ] Checkpoint final
+
+
+## Sistema de Login Administrativo com Google OAuth
+
+### Banco de Dados
+- [ ] Criar tabela `authorized_admins` com emails autorizados
+- [ ] Adicionar campos: email, createdAt, updatedAt, authorizedBy
+
+### Backend (tRPC Procedures)
+- [ ] Implementar procedure para listar emails autorizados
+- [ ] Implementar procedure para adicionar email autorizado (admin only)
+- [ ] Implementar procedure para remover email autorizado (admin only)
+- [ ] Implementar webhook para n8n adicionar/remover emails via WhatsApp
+
+### Frontend - Página de Login
+- [ ] Criar página /admin/login com formulário
+- [ ] Implementar botão "Login com Google"
+- [ ] Validar email contra lista de autorizados
+- [ ] Redirecionar para painel se autorizado
+- [ ] Mostrar mensagem de erro se email não autorizado
+
+### Integração n8n
+- [ ] Documentar endpoint webhook para adicionar emails
+- [ ] Documentar endpoint webhook para remover emails
+- [ ] Testar integração com n8n + WhatsApp
+
+### Testes
+- [ ] Testes de validação de emails autorizados
+- [ ] Testes de webhook do n8n
+- [ ] Testes de fluxo de login

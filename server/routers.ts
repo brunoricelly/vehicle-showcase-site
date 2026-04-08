@@ -24,6 +24,11 @@ import {
   createStoreContact,
   updateStoreContact,
   deleteStoreContact,
+  getAuthorizedAdmins,
+  getAuthorizedAdminByEmail,
+  addAuthorizedAdmin,
+  removeAuthorizedAdmin,
+  isEmailAuthorized,
 } from "./db";
 import { storagePut } from "./storage";
 import { TRPCError } from "@trpc/server";
@@ -623,6 +628,179 @@ export const appRouter = router({
             message: errorMessage,
           });
         }
+      }),
+  }),
+
+  // ============ WEBHOOKS FOR AUTHORIZED ADMINS (for n8n integration) ============
+  adminWebhooks: router({
+    // Webhook: Add authorized admin email via n8n
+    addAuthorizedEmail: publicProcedure
+      .input(
+        z.object({
+          apiKey: z.string(),
+          email: z.string().email(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        // Validate API key
+        const validApiKey = process.env.WEBHOOK_API_KEY;
+        if (!validApiKey || input.apiKey !== validApiKey) {
+          await addWebhookLog({
+            action: "add_authorized_email",
+            status: "failed",
+            requestData: input,
+            errorMessage: "Invalid API key",
+          });
+
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Invalid API key",
+          });
+        }
+
+        try {
+          const result = await addAuthorizedAdmin({
+            email: input.email,
+            isActive: true,
+            authorizedBy: 1, // System user
+          });
+
+          // Log webhook
+          await addWebhookLog({
+            action: "add_authorized_email",
+            status: "success",
+            requestData: input,
+            responseData: { id: (result as any).insertId },
+          });
+
+          return {
+            success: true,
+            id: (result as any).insertId,
+          };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
+
+          await addWebhookLog({
+            action: "add_authorized_email",
+            status: "failed",
+            requestData: input,
+            errorMessage,
+          });
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errorMessage,
+          });
+        }
+      }),
+
+    // Webhook: Remove authorized admin email via n8n
+    removeAuthorizedEmail: publicProcedure
+      .input(
+        z.object({
+          apiKey: z.string(),
+          email: z.string().email(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        // Validate API key
+        const validApiKey = process.env.WEBHOOK_API_KEY;
+        if (!validApiKey || input.apiKey !== validApiKey) {
+          await addWebhookLog({
+            action: "remove_authorized_email",
+            status: "failed",
+            requestData: input,
+            errorMessage: "Invalid API key",
+          });
+
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Invalid API key",
+          });
+        }
+
+        try {
+          await removeAuthorizedAdmin(input.email);
+
+          // Log webhook
+          await addWebhookLog({
+            action: "remove_authorized_email",
+            status: "success",
+            requestData: input,
+            responseData: { email: input.email },
+          });
+
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
+
+          await addWebhookLog({
+            action: "remove_authorized_email",
+            status: "failed",
+            requestData: input,
+            errorMessage,
+          });
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errorMessage,
+          });
+        }
+      }),
+  }),
+
+  // ============ AUTHORIZED ADMINS ROUTER ============
+  admin: router({
+    // Admin: Get all authorized admin emails
+    listAuthorizedEmails: adminProcedure.query(async () => {
+      return await getAuthorizedAdmins();
+    }),
+
+    // Admin: Add authorized admin email
+    addAuthorizedEmail: adminProcedure
+      .input(
+        z.object({
+          email: z.string().email(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        try {
+          const result = await addAuthorizedAdmin({
+            email: input.email,
+            isActive: true,
+            authorizedBy: ctx.user.id,
+          });
+          return { success: true, id: (result as any).insertId };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Failed to add authorized email";
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errorMessage,
+          });
+        }
+      }),
+
+    // Admin: Remove authorized admin email
+    removeAuthorizedEmail: adminProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        try {
+          await removeAuthorizedAdmin(input.email);
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Failed to remove authorized email";
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errorMessage,
+          });
+        }
+      }),
+
+    // Public: Check if email is authorized (used during login)
+    isEmailAuthorized: publicProcedure
+      .input(z.object({ email: z.string().email() }))
+      .query(async ({ input }) => {
+        return await isEmailAuthorized(input.email);
       }),
   }),
 });

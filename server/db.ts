@@ -9,12 +9,15 @@ import {
   webhookLogs,
   storeSettings,
   storeContacts,
+  authorizedAdmins,
   type Vehicle,
   type VehicleImage,
   type VehicleHistory,
   type WebhookLog,
   type InsertStoreSettings,
   type InsertStoreContact,
+  type AuthorizedAdmin,
+  type InsertAuthorizedAdmin,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -448,4 +451,58 @@ export async function deleteStoreContact(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(storeContacts).where(eq(storeContacts.id, id)).execute();
+}
+
+// ============ AUTHORIZED ADMINS QUERIES ============
+
+export async function getAuthorizedAdmins() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(authorizedAdmins)
+    .where(eq(authorizedAdmins.isActive, true))
+    .orderBy(desc(authorizedAdmins.createdAt))
+    .execute();
+}
+
+export async function getAuthorizedAdminByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db
+    .select()
+    .from(authorizedAdmins)
+    .where(and(eq(authorizedAdmins.email, email), eq(authorizedAdmins.isActive, true)))
+    .limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function addAuthorizedAdmin(data: InsertAuthorizedAdmin) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Check if email already exists
+  const existing = await getAuthorizedAdminByEmail(data.email);
+  if (existing) {
+    throw new Error(`Email ${data.email} já está autorizado`);
+  }
+  
+  const result = await db.insert(authorizedAdmins).values(data);
+  return { insertId: (result as any).insertId };
+}
+
+export async function removeAuthorizedAdmin(email: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db
+    .update(authorizedAdmins)
+    .set({ isActive: false })
+    .where(eq(authorizedAdmins.email, email))
+    .execute();
+}
+
+export async function isEmailAuthorized(email: string): Promise<boolean> {
+  const admin = await getAuthorizedAdminByEmail(email);
+  return admin !== null;
 }

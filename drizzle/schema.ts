@@ -151,3 +151,18 @@ export const storeContacts = mysqlTable("store_contacts", {
 
 export type StoreContact = typeof storeContacts.$inferSelect;
 export type InsertStoreContact = typeof storeContacts.$inferInsert;
+
+/**
+ * Authorized admins table - stores emails authorized to access admin panel
+ */
+export const authorizedAdmins = mysqlTable("authorized_admins", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  isActive: boolean("isActive").default(true).notNull(),
+  authorizedBy: int("authorizedBy"), // user id who authorized this email
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AuthorizedAdmin = typeof authorizedAdmins.$inferSelect;
+export type InsertAuthorizedAdmin = typeof authorizedAdmins.$inferInsert;

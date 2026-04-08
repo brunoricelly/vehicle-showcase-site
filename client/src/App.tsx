@@ -13,6 +13,7 @@ import AdminVehicleForm from "./pages/AdminVehicleForm";
 import AdminHistory from "./pages/AdminHistory";
 import AdminVehicleImages from "./pages/AdminVehicleImages";
 import AdminPanel from "./pages/AdminPanel";
+import { AdminLogin } from "./pages/admin/AdminLogin";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -26,6 +27,7 @@ function Router() {
       <Route path={"/admin/vehicle/:id"} component={AdminVehicleForm} />
       <Route path={"/admin/vehicle/:id/images"} component={AdminVehicleImages} />
       <Route path={"/admin/history"} component={AdminHistory} />
+      <Route path={"/admin/login"} component={AdminLogin} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
