@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getLoginUrl } from "@/const";
-import { Menu, Search, MessageCircle, ChevronDown, Scale } from "lucide-react";
+import { Menu, Search, MessageCircle, ChevronDown, Scale, LogOut, Settings } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
 
 const containerVariants = {
@@ -53,6 +53,12 @@ export default function Home() {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const { mutate: logout } = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/");
+    },
+  });
 
   const { data: vehicles, isLoading } = trpc.vehicles.list.useQuery({
     search: searchBrand || undefined,
@@ -143,6 +149,50 @@ export default function Home() {
               >
                 <Search size={20} />
               </motion.button>
+              
+              {/* Admin Dropdown */}
+              {user?.role === "admin" && (
+                <div className="relative">
+                  <motion.button
+                    onClick={() => setAdminMenuOpen(!adminMenuOpen)}
+                    whileHover={{ color: "var(--primary)" }}
+                    className="text-sm text-muted-foreground transition-colors flex items-center gap-1"
+                  >
+                    Administrador
+                    <ChevronDown size={16} className={`transition-transform ${adminMenuOpen ? "rotate-180" : ""}`} />
+                  </motion.button>
+                  
+                  {adminMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg py-2 z-50"
+                    >
+                      <button
+                        onClick={() => {
+                          setLocation("/admin");
+                          setAdminMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted transition-colors flex items-center gap-2"
+                      >
+                        <Settings size={16} />
+                        Painel de Controle
+                      </button>
+                      <button
+                        onClick={() => {
+                          logout();
+                          setAdminMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted transition-colors flex items-center gap-2 border-t border-border"
+                      >
+                        <LogOut size={16} />
+                        Sair
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Mobile Menu */}
@@ -179,6 +229,28 @@ export default function Home() {
             <button className="block w-full text-left text-sm text-muted-foreground hover:text-primary transition-colors">
               Encontrar veículo
             </button>
+            {user?.role === "admin" && (
+              <>
+                <button
+                  onClick={() => {
+                    setLocation("/admin");
+                    setMenuOpen(false);
+                  }}
+                  className="block w-full text-left text-sm text-muted-foreground hover:text-primary transition-colors border-t border-border pt-3 mt-3"
+                >
+                  Painel de Controle
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMenuOpen(false);
+                  }}
+                  className="block w-full text-left text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Sair
+                </button>
+              </>
+            )}
           </motion.div>
         </div>
       </motion.header>

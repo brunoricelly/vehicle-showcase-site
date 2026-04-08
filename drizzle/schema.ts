@@ -110,3 +110,44 @@ export const webhookLogs = mysqlTable("webhook_logs", {
 
 export type WebhookLog = typeof webhookLogs.$inferSelect;
 export type InsertWebhookLog = typeof webhookLogs.$inferInsert;
+
+/**
+ * Store settings table - stores global configuration for the shop
+ */
+export const storeSettings = mysqlTable("store_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  storeName: varchar("storeName", { length: 255 }).notNull(),
+  storeDescription: text("storeDescription"),
+  address: text("address"),
+  city: varchar("city", { length: 100 }),
+  state: varchar("state", { length: 50 }),
+  zipCode: varchar("zipCode", { length: 20 }),
+  phone: varchar("phone", { length: 20 }),
+  email: varchar("email", { length: 320 }),
+  website: varchar("website", { length: 255 }),
+  businessHours: text("businessHours"), // JSON format
+  logoUrl: text("logoUrl"),
+  bannerUrl: text("bannerUrl"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedBy: int("updatedBy"), // user id
+});
+
+export type StoreSettings = typeof storeSettings.$inferSelect;
+export type InsertStoreSettings = typeof storeSettings.$inferInsert;
+
+/**
+ * Store contacts table - stores social media and contact information
+ */
+export const storeContacts = mysqlTable("store_contacts", {
+  id: int("id").autoincrement().primaryKey(),
+  type: varchar("type", { length: 50 }).notNull(), // "whatsapp", "instagram", "facebook", "youtube", "email"
+  value: varchar("value", { length: 255 }).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  displayOrder: int("displayOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StoreContact = typeof storeContacts.$inferSelect;
+export type InsertStoreContact = typeof storeContacts.$inferInsert;

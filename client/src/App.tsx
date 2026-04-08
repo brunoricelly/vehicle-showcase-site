@@ -12,6 +12,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminVehicleForm from "./pages/AdminVehicleForm";
 import AdminHistory from "./pages/AdminHistory";
 import AdminVehicleImages from "./pages/AdminVehicleImages";
+import AdminPanel from "./pages/AdminPanel";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -20,7 +21,8 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/vehicle/:id"} component={VehicleDetailNew} />
       <Route path={"/comparison"} component={ComparisonPage} />
-      <Route path={"/admin"} component={AdminDashboard} />
+      <Route path={"/admin"} component={AdminPanel} />
+      <Route path={"/admin/dashboard"} component={AdminDashboard} />
       <Route path={"/admin/vehicle/:id"} component={AdminVehicleForm} />
       <Route path={"/admin/vehicle/:id/images"} component={AdminVehicleImages} />
       <Route path={"/admin/history"} component={AdminHistory} />

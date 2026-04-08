@@ -7,10 +7,14 @@ import {
   vehicleImages,
   vehicleHistory,
   webhookLogs,
+  storeSettings,
+  storeContacts,
   type Vehicle,
   type VehicleImage,
   type VehicleHistory,
   type WebhookLog,
+  type InsertStoreSettings,
+  type InsertStoreContact,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -392,4 +396,56 @@ export async function getWebhookLogs(limit = 100) {
     .from(webhookLogs)
     .orderBy(desc(webhookLogs.createdAt))
     .limit(limit);
+}
+
+// ============ STORE SETTINGS & CONTACTS QUERIES ============
+
+export async function getStoreSettings() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(storeSettings).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function updateStoreSettings(data: Partial<InsertStoreSettings>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(storeSettings).set(data as any).execute();
+}
+
+export async function createStoreSettings(data: InsertStoreSettings) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(storeSettings).values(data);
+  return { insertId: (result as any).insertId };
+}
+
+export async function getStoreContacts() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(storeContacts)
+    .where(eq(storeContacts.isActive, true))
+    .orderBy(storeContacts.displayOrder)
+    .execute();
+}
+
+export async function createStoreContact(data: InsertStoreContact) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(storeContacts).values(data);
+  return { insertId: (result as any).insertId };
+}
+
+export async function updateStoreContact(id: number, data: Partial<InsertStoreContact>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(storeContacts).set(data as any).where(eq(storeContacts.id, id)).execute();
+}
+
+export async function deleteStoreContact(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(storeContacts).where(eq(storeContacts.id, id)).execute();
 }

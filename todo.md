@@ -102,3 +102,55 @@
 - [x] Navegador flutuante mostrando quantidade de veículos selecionados
 - [x] Responsividade mobile para comparação
 - [x] Testes e checkpoint final
+
+
+## Sistema Administrativo Completo (Nova Implementação)
+
+### Banco de Dados
+- [ ] Criar tabela `store_settings` para configurações globais da loja
+- [ ] Criar tabela `store_contacts` para dados de contato e redes sociais
+- [ ] Adicionar campos para dados dinâmicos no schema
+
+### Backend (tRPC Procedures)
+- [ ] Implementar procedures para CRUD de store_settings
+- [ ] Implementar procedures para CRUD de store_contacts
+- [ ] Adicionar validação de admin em todas as operações
+- [ ] Implementar procedures de upload e otimização de imagens
+
+### Frontend - Navbar & Autenticação
+- [ ] Adicionar menu dropdown "Administrador" na Navbar
+- [ ] Implementar lógica de exibição condicional (admin only)
+- [ ] Adicionar botão de Logout
+- [ ] Estilizar menu dropdown com design consistente
+
+### Painel Administrativo
+- [ ] Criar página /admin/dashboard
+- [ ] Implementar módulo de Configurações (store_settings)
+- [ ] Implementar módulo de Estoque (CRUD de veículos)
+- [ ] Adicionar filtros e busca no módulo de estoque
+- [ ] Implementar formulários com validação
+
+### Dados Dinâmicos
+- [ ] Remover valores hardcoded da Navbar (telefone, endereço)
+- [ ] Remover valores hardcoded do Footer
+- [ ] Remover valores hardcoded da Homepage
+- [ ] Integrar dados da API em todos os componentes
+
+### Upload de Imagens
+- [ ] Implementar redimensionamento de imagens (Sharp ou similar)
+- [ ] Otimizar tamanho de arquivo antes do upload
+- [ ] Adicionar preview de imagem no formulário
+- [ ] Implementar validação de tipo de arquivo
+
+### Segurança & Performance
+- [ ] Validar token admin em todas as rotas protegidas
+- [ ] Implementar rate limiting para uploads
+- [ ] Otimizar queries do banco de dados
+- [ ] Adicionar cache para dados de configuração
+
+### Testes
+- [ ] Testes de autenticação e autorização
+- [ ] Testes de CRUD de configurações
+- [ ] Testes de CRUD de veículos
+- [ ] Testes de upload de imagens
+- [ ] Checkpoint final

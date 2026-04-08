@@ -17,6 +17,13 @@ import {
   addVehicleHistory,
   addWebhookLog,
   getWebhookLogs,
+  getStoreSettings,
+  updateStoreSettings,
+  createStoreSettings,
+  getStoreContacts,
+  createStoreContact,
+  updateStoreContact,
+  deleteStoreContact,
 } from "./db";
 import { storagePut } from "./storage";
 import { TRPCError } from "@trpc/server";
@@ -496,6 +503,121 @@ export const appRouter = router({
             vehicleId: input.vehicleId,
           });
 
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errorMessage,
+          });
+        }
+      }),
+  }),
+
+  // ============ STORE SETTINGS & CONTACTS ROUTER ============
+  store: router({
+    // Public: Get store settings
+    settings: publicProcedure.query(async () => {
+      return await getStoreSettings();
+    }),
+
+    // Public: Get store contacts
+    contacts: publicProcedure.query(async () => {
+      return await getStoreContacts();
+    }),
+
+    // Admin: Update store settings
+    updateSettings: adminProcedure
+      .input(
+        z.object({
+          storeName: z.string().optional(),
+          storeDescription: z.string().optional(),
+          address: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          zipCode: z.string().optional(),
+          phone: z.string().optional(),
+          email: z.string().email().optional(),
+          website: z.string().optional(),
+          businessHours: z.string().optional(),
+          logoUrl: z.string().optional(),
+          bannerUrl: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        try {
+          await updateStoreSettings({
+            ...input,
+            updatedBy: ctx.user.id,
+          });
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Failed to update store settings";
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errorMessage,
+          });
+        }
+      }),
+
+    // Admin: Create store contact
+    createContact: adminProcedure
+      .input(
+        z.object({
+          type: z.enum(["whatsapp", "instagram", "facebook", "youtube", "email"]),
+          value: z.string(),
+          displayOrder: z.number().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        try {
+          const result = await createStoreContact({
+            type: input.type,
+            value: input.value,
+            displayOrder: input.displayOrder || 0,
+            isActive: true,
+          });
+          return { success: true, id: (result as any).insertId };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Failed to create contact";
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errorMessage,
+          });
+        }
+      }),
+
+    // Admin: Update store contact
+    updateContact: adminProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          type: z.enum(["whatsapp", "instagram", "facebook", "youtube", "email"]).optional(),
+          value: z.string().optional(),
+          isActive: z.boolean().optional(),
+          displayOrder: z.number().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        try {
+          const { id, ...data } = input;
+          await updateStoreContact(id, data);
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Failed to update contact";
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errorMessage,
+          });
+        }
+      }),
+
+    // Admin: Delete store contact
+    deleteContact: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        try {
+          await deleteStoreContact(input.id);
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Failed to delete contact";
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: errorMessage,
