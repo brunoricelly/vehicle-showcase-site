@@ -247,10 +247,19 @@ export default function AdminVehicleForm() {
                 />
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-4 flex-wrap">
                 <Button type="submit" className="neon-button flex-1">
                   {isNewVehicle ? "CREATE VEHICLE" : "UPDATE VEHICLE"}
                 </Button>
+                {!isNewVehicle && (
+                  <Button
+                    type="button"
+                    onClick={() => setLocation(`/admin/vehicle/${vehicleId}/images`)}
+                    className="px-6 py-2 border-2 border-secondary text-secondary hover:bg-secondary hover:text-black transition-all"
+                  >
+                    MANAGE IMAGES
+                  </Button>
+                )}
                 <Button
                   type="button"
                   onClick={() => setLocation("/admin")}

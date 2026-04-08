@@ -26,24 +26,24 @@
 - [x] Autenticação e proteção de rotas (admin only)
 - [x] Página de listagem de veículos com CRUD
 - [x] Formulário de adição/edição de veículos
-- [ ] Upload de múltiplas imagens com preview
+- [x] Upload de múltiplas imagens com preview
 - [x] Página de histórico de alterações com filtros
 - [x] Confirmação de exclusão de veículos
 
 ## Integração & Webhooks
-- [ ] Configurar endpoint webhook para criação de veículos via n8n
-- [ ] Configurar endpoint webhook para remoção de veículos via n8n
-- [ ] Validação de autorização (token/API key)
-- [ ] Logging de requisições webhook
-- [ ] Documentação de integração com n8n
+- [x] Configurar endpoint webhook para criação de veículos via n8n
+- [x] Configurar endpoint webhook para remoção de veículos via n8n
+- [x] Validação de autorização (token/API key)
+- [x] Logging de requisições webhook
+- [x] Documentação de integração com n8n
 
 ## Testes & Qualidade
-- [ ] Testes unitários para procedures tRPC
-- [ ] Testes de validação de webhooks
-- [ ] Testes de autenticação e autorização
+- [x] Testes unitários para procedures tRPC
+- [x] Testes de validação de webhooks
+- [x] Testes de autenticação e autorização
 
 ## Deploy & Documentação
 - [x] Documentação de configuração do projeto
 - [x] Documentação de integração com n8n
 - [x] Documentação de variáveis de ambiente
-- [ ] Checkpoint final e deploy
+- [x] Checkpoint final e deploy
