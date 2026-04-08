@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { getLoginUrl } from "@/const";
 import { Menu, Search, MessageCircle, ChevronDown, Scale, LogOut, Settings } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -48,6 +49,7 @@ export default function Home() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const { addVehicle, isVehicleSelected, canAddMore } = useComparison();
+  const { settings: storeSettings } = useStoreSettings();
   const [searchBrand, setSearchBrand] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [minPrice, setMinPrice] = useState("");
@@ -130,12 +132,12 @@ export default function Home() {
               </motion.button>
               <motion.a
                 whileHover={{ color: "var(--primary)" }}
-                href="https://wa.me/5519999999999"
+                href={`https://wa.me/${storeSettings.phone?.replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-muted-foreground transition-colors"
               >
-                ℹ 3826-2818
+                ℹ {storeSettings.phone}
               </motion.a>
               <motion.button
                 whileHover={{ color: "var(--primary)" }}
@@ -227,12 +229,12 @@ export default function Home() {
               Menu
             </button>
             <a
-              href="https://wa.me/5519999999999"
+              href={`https://wa.me/${storeSettings.phone?.replace(/\D/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-sm text-muted-foreground hover:text-primary transition-colors"
             >
-              ℹ 3826-2818
+              ℹ {storeSettings.phone}
             </a>
             <button className="block w-full text-left text-sm text-muted-foreground hover:text-primary transition-colors">
               Encontrar veículo

@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import { useComparison } from "@/contexts/ComparisonContext";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X, MessageCircle } from "lucide-react";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 export default function ComparisonPage() {
   const [, setLocation] = useLocation();
   const { selectedVehicles, removeVehicle, clearComparison } = useComparison();
+  const { settings: storeSettings } = useStoreSettings();
   const [imageIndices, setImageIndices] = useState<Record<number, number>>({});
 
   if (selectedVehicles.length === 0) {
@@ -231,7 +233,7 @@ export default function ComparisonPage() {
                 <motion.a
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  href="https://wa.me/5519999999999"
+                  href={`https://wa.me/${storeSettings.phone?.replace(/\D/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="premium-button w-full flex items-center justify-center gap-2 block text-center text-sm"
@@ -265,7 +267,7 @@ export default function ComparisonPage() {
 
       {/* WhatsApp Floating Button */}
       <motion.a
-        href="https://wa.me/5519999999999"
+        href={`https://wa.me/${storeSettings.phone?.replace(/\D/g, '')}`}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}

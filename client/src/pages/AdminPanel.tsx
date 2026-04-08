@@ -32,9 +32,11 @@ export default function AdminPanel() {
   // Queries
   const { data: storeSettings } = trpc.store.settings.useQuery();
   const { data: vehicles } = trpc.vehicles.list.useQuery({});
+  const utils = trpc.useUtils();
   const { mutate: updateSettings } = trpc.store.updateSettings.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Configurações atualizadas com sucesso!");
+      await utils.store.settings.invalidate();
     },
     onError: (error) => {
       toast.error(`Erro: ${error.message}`);

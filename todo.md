@@ -195,3 +195,14 @@
 - [x] Adicionar botão de login na página Home
 - [x] Adicionar email mercadinhonop@gmail.com como autorizado para testes
 - [x] Testar fluxo de login completo
+
+## BUG - Configurações da Loja Não Sincronizam
+
+### Solução Implementada
+- [x] Criar hook useStoreSettings para carregar configurações dinamiçamente
+- [x] Adicionar invalidate no AdminPanel para recarregar cache após salvar
+- [x] Atualizar Home.tsx para usar configurações dinâmicas
+- [x] Atualizar VehicleDetailNew.tsx para usar configurações dinâmicas
+- [x] Atualizar ComparisonPage.tsx para usar configurações dinâmicas
+- [x] Testar sincronização em tempo real
+- [x] Criar testes de integração para sincronização (5 testes passando)

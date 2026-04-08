@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X, MessageCircle, Scale } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 
 export default function VehicleDetail() {
   const [, params] = useRoute("/vehicle/:id");
@@ -12,6 +13,7 @@ export default function VehicleDetail() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { addVehicle, isVehicleSelected, canAddMore } = useComparison();
+  const { settings: storeSettings } = useStoreSettings();
   const { scrollY } = useScroll();
   const opacity = useTransform(scrollY, [0, 200], [1, 0.5]);
 
@@ -300,7 +302,7 @@ export default function VehicleDetail() {
               <motion.a
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                href="https://wa.me/5519999999999"
+                href={`https://wa.me/${storeSettings.phone?.replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="premium-button w-full flex items-center justify-center gap-2 block text-center"
@@ -401,7 +403,7 @@ export default function VehicleDetail() {
 
       {/* WhatsApp Floating Button */}
       <motion.a
-        href="https://wa.me/5519999999999"
+        href={`https://wa.me/${storeSettings.phone?.replace(/\D/g, '')}`}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}
