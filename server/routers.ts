@@ -33,6 +33,7 @@ import {
 import { storagePut } from "./storage";
 import { TRPCError } from "@trpc/server";
 import { validateImageDimensions, formatFileSize } from "./imageValidation";
+import { compressImage, formatCompressionStats } from "./imageCompression";
 
 // Utility to check if user is admin
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -290,13 +291,21 @@ export const appRouter = router({
           `✅ Image validated: ${validation.width}x${validation.height}px, ${formatFileSize(validation.fileSizeBytes || 0)}`
         );
 
+        // Compress image with adaptive quality
+        const compressionResult = await compressImage(buffer, input.mimeType);
+        console.log(`✅ ${formatCompressionStats(compressionResult)}`);
+
         // Generate unique key
         const timestamp = Date.now();
         const randomSuffix = Math.random().toString(36).substring(2, 8);
         const fileKey = `vehicles/${input.vehicleId}/${timestamp}-${randomSuffix}-${input.fileName}`;
 
-        // Upload to S3
-        const { url } = await storagePut(fileKey, buffer, input.mimeType);
+        // Upload compressed image to S3
+        const { url } = await storagePut(
+          fileKey,
+          compressionResult.buffer,
+          `image/${compressionResult.format}`
+        );
 
         // Get current images
         const currentImages = await getVehicleImages(input.vehicleId);
@@ -315,10 +324,17 @@ export const appRouter = router({
           imageUrl: url,
           imageKey: fileKey,
           dimensions: {
-            width: validation.width || 0,
-            height: validation.height || 0,
+            width: compressionResult.compressedDimensions.width,
+            height: compressionResult.compressedDimensions.height,
           },
-          fileSize: formatFileSize(validation.fileSizeBytes || 0),
+          fileSize: formatFileSize(compressionResult.compressedSize),
+          compression: {
+            originalSize: formatFileSize(compressionResult.originalSize),
+            compressedSize: formatFileSize(compressionResult.compressedSize),
+            ratio: compressionResult.compressionRatio,
+            quality: compressionResult.quality,
+            format: compressionResult.format,
+          },
         };
       }),
 
