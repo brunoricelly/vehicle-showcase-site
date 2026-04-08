@@ -22,13 +22,13 @@
 - [x] Responsividade mobile-first
 
 ## Frontend - Painel Administrativo
-- [ ] Layout dashboard com sidebar navigation
-- [ ] Autenticação e proteção de rotas (admin only)
-- [ ] Página de listagem de veículos com CRUD
-- [ ] Formulário de adição/edição de veículos
+- [x] Layout dashboard com sidebar navigation
+- [x] Autenticação e proteção de rotas (admin only)
+- [x] Página de listagem de veículos com CRUD
+- [x] Formulário de adição/edição de veículos
 - [ ] Upload de múltiplas imagens com preview
-- [ ] Página de histórico de alterações com filtros
-- [ ] Confirmação de exclusão de veículos
+- [x] Página de histórico de alterações com filtros
+- [x] Confirmação de exclusão de veículos
 
 ## Integração & Webhooks
 - [ ] Configurar endpoint webhook para criação de veículos via n8n
@@ -43,7 +43,7 @@
 - [ ] Testes de autenticação e autorização
 
 ## Deploy & Documentação
-- [ ] Documentação de configuração do projeto
-- [ ] Documentação de integração com n8n
-- [ ] Documentação de variáveis de ambiente
+- [x] Documentação de configuração do projeto
+- [x] Documentação de integração com n8n
+- [x] Documentação de variáveis de ambiente
 - [ ] Checkpoint final e deploy
