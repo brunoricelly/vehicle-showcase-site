@@ -115,7 +115,7 @@
 - [x] Implementar procedures para CRUD de store_settings
 - [x] Implementar procedures para CRUD de store_contacts
 - [x] Adicionar validação de admin em todas as operações
-- [ ] Implementar procedures de upload e otimização de imagens
+- [x] Implementar procedures de upload e otimização de imagens
 
 ### Frontend - Navbar & Autenticação
 - [x] Adicionar menu dropdown "Administrador" na Navbar
@@ -131,29 +131,29 @@
 - [x] Implementar formulários com validação
 
 ### Dados Dinâmicos
-- [ ] Remover valores hardcoded da Navbar (telefone, endereço)
-- [ ] Remover valores hardcoded do Footer
-- [ ] Remover valores hardcoded da Homepage
-- [ ] Integrar dados da API em todos os componentes
+- [x] Remover valores hardcoded da Navbar (telefone, endereço)
+- [x] Remover valores hardcoded do Footer
+- [x] Remover valores hardcoded da Homepage
+- [x] Integrar dados da API em todos os componentes
 
 ### Upload de Imagens
-- [ ] Implementar redimensionamento de imagens (Sharp ou similar)
-- [ ] Otimizar tamanho de arquivo antes do upload
-- [ ] Adicionar preview de imagem no formulário
-- [ ] Implementar validação de tipo de arquivo
+- [x] Implementar redimensionamento de imagens (Sharp ou similar)
+- [x] Otimizar tamanho de arquivo antes do upload
+- [x] Adicionar preview de imagem no formulário
+- [x] Implementar validação de tipo de arquivo
 
 ### Segurança & Performance
-- [ ] Validar token admin em todas as rotas protegidas
-- [ ] Implementar rate limiting para uploads
-- [ ] Otimizar queries do banco de dados
-- [ ] Adicionar cache para dados de configuração
+- [x] Validar token admin em todas as rotas protegidas
+- [x] Implementar rate limiting para uploads
+- [x] Otimizar queries do banco de dados
+- [x] Adicionar cache para dados de configuração
 
 ### Testes
-- [ ] Testes de autenticação e autorização
-- [ ] Testes de CRUD de configurações
-- [ ] Testes de CRUD de veículos
-- [ ] Testes de upload de imagens
-- [ ] Checkpoint final
+- [x] Testes de autenticação e autorização
+- [x] Testes de CRUD de configurações
+- [x] Testes de CRUD de veículos
+- [x] Testes de upload de imagens
+- [x] Checkpoint final
 
 
 ## Sistema de Login Administrativo com Google OAuth
@@ -178,7 +178,7 @@
 ### Integração n8n
 - [x] Documentar endpoint webhook para adicionar emails
 - [x] Documentar endpoint webhook para remover emails
-- [ ] Testar integração com n8n + WhatsApp
+- [x] Testar integração com n8n + WhatsApp
 
 ### Testes
 - [x] Testes de validação de emails autorizados
