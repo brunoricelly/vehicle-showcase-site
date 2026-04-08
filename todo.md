@@ -107,26 +107,26 @@
 ## Sistema Administrativo Completo (Nova Implementação)
 
 ### Banco de Dados
-- [ ] Criar tabela `store_settings` para configurações globais da loja
-- [ ] Criar tabela `store_contacts` para dados de contato e redes sociais
-- [ ] Adicionar campos para dados dinâmicos no schema
+- [x] Criar tabela `store_settings` para configurações globais da loja
+- [x] Criar tabela `store_contacts` para dados de contato e redes sociais
+- [x] Adicionar campos para dados dinâmicos no schema
 
 ### Backend (tRPC Procedures)
-- [ ] Implementar procedures para CRUD de store_settings
-- [ ] Implementar procedures para CRUD de store_contacts
-- [ ] Adicionar validação de admin em todas as operações
+- [x] Implementar procedures para CRUD de store_settings
+- [x] Implementar procedures para CRUD de store_contacts
+- [x] Adicionar validação de admin em todas as operações
 - [ ] Implementar procedures de upload e otimização de imagens
 
 ### Frontend - Navbar & Autenticação
-- [ ] Adicionar menu dropdown "Administrador" na Navbar
-- [ ] Implementar lógica de exibição condicional (admin only)
-- [ ] Adicionar botão de Logout
-- [ ] Estilizar menu dropdown com design consistente
+- [x] Adicionar menu dropdown "Administrador" na Navbar
+- [x] Implementar lógica de exibição condicional (admin only)
+- [x] Adicionar botão de Logout
+- [x] Estilizar menu dropdown com design consistente
 
 ### Painel Administrativo
-- [ ] Criar página /admin/dashboard
-- [ ] Implementar módulo de Configurações (store_settings)
-- [ ] Implementar módulo de Estoque (CRUD de veículos)
+- [x] Criar página /admin/dashboard
+- [x] Implementar módulo de Configurações (store_settings)
+- [x] Implementar módulo de Estoque (CRUD de veículos)
 - [ ] Adicionar filtros e busca no módulo de estoque
 - [ ] Implementar formulários com validação
 

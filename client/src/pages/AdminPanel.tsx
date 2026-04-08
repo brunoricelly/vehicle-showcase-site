@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -45,20 +45,30 @@ export default function AdminPanel() {
       setLocation("/");
     },
   });
+  const { mutate: deleteVehicle } = trpc.vehicles.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Veículo deletado com sucesso!");
+    },
+    onError: (error) => {
+      toast.error(`Erro ao deletar: ${error.message}`);
+    },
+  });
 
-  // Load store settings when data arrives
-  if (storeSettings && !storeName) {
-    setStoreName(storeSettings.storeName || "");
-    setStoreDescription(storeSettings.storeDescription || "");
-    setAddress(storeSettings.address || "");
-    setCity(storeSettings.city || "");
-    setState(storeSettings.state || "");
-    setZipCode(storeSettings.zipCode || "");
-    setPhone(storeSettings.phone || "");
-    setEmail(storeSettings.email || "");
-    setWebsite(storeSettings.website || "");
-    setBusinessHours(storeSettings.businessHours || "");
-  }
+  // Load store settings when data arrives (useEffect)
+  useEffect(() => {
+    if (storeSettings) {
+      setStoreName(storeSettings.storeName || "");
+      setStoreDescription(storeSettings.storeDescription || "");
+      setAddress(storeSettings.address || "");
+      setCity(storeSettings.city || "");
+      setState(storeSettings.state || "");
+      setZipCode(storeSettings.zipCode || "");
+      setPhone(storeSettings.phone || "");
+      setEmail(storeSettings.email || "");
+      setWebsite(storeSettings.website || "");
+      setBusinessHours(storeSettings.businessHours || "");
+    }
+  }, [storeSettings]);
 
   // Check if user is admin
   if (user?.role !== "admin") {
@@ -375,7 +385,7 @@ export default function AdminPanel() {
                               <Button
                                 onClick={() => {
                                   if (confirm(`Deseja deletar ${vehicle.brand} ${vehicle.model}?`)) {
-                                    // Delete logic will be implemented
+                                    deleteVehicle({ id: vehicle.id });
                                   }
                                 }}
                                 size="sm"
