@@ -223,3 +223,19 @@
 - [x] Integrar logo no header do site
 - [x] Sincronizar logo entre admin e site
 - [x] Criar endpoint /api/upload para receber arquivos
+
+
+## BUG - Footer e Componentes Não Sincronizam com Admin
+
+### Problema
+- [x] Footer mostra dados hardcoded mesmo após alterações no painel admin
+- [x] Endereço, telefone, horário não atualizam no site
+- [x] Necessário criar componente Footer dinâmico
+
+### Solução
+- [x] Criar componente Footer.tsx que usa useStoreSettings
+- [x] Remover dados hardcoded do footer
+- [x] Testar sincronização em tempo real
+- [x] Verificar outros componentes com dados hardcoded
+- [x] Adicionar campos whatsappNumber, saturdayHours, sundayHours ao schema
+- [x] Executar migration SQL

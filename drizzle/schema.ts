@@ -126,6 +126,9 @@ export const storeSettings = mysqlTable("store_settings", {
   email: varchar("email", { length: 320 }),
   website: varchar("website", { length: 255 }),
   businessHours: text("businessHours"), // JSON format
+  saturdayHours: text("saturdayHours"),
+  sundayHours: text("sundayHours"),
+  whatsappNumber: varchar("whatsappNumber", { length: 20 }),
   logoUrl: text("logoUrl"),
   bannerUrl: text("bannerUrl"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

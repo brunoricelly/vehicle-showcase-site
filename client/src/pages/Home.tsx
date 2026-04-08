@@ -523,9 +523,9 @@ export default function Home() {
                 Localização
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed font-light">
-                Avenida Salvador Rotella, 488<br />
-                Jardim Flora, Vinhedo - SP<br />
-                CEP 13280-156
+                {storeSettings?.address || "Avenida Salvador Rotella, 488"}<br />
+                {storeSettings?.city || "Jardim Flora, Vinhedo - SP"}<br />
+                {storeSettings?.zipCode || "CEP 13280-156"}
               </p>
             </motion.div>
 
@@ -539,9 +539,9 @@ export default function Home() {
                 Horário
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed font-light">
-                Segunda a Sexta: 09h00 às 18h<br />
-                Sábado: 09h00 às 13h<br />
-                Domingo: Fechado
+                {storeSettings?.businessHours || "Segunda a Sexta: 09h00 às 18h"}<br />
+                {storeSettings?.saturdayHours || "Sábado: 09h00 às 13h"}<br />
+                {storeSettings?.sundayHours || "Domingo: Fechado"}
               </p>
             </motion.div>
 
@@ -557,12 +557,12 @@ export default function Home() {
               <div className="space-y-3">
                 <motion.a
                   whileHover={{ x: 4 }}
-                  href="https://wa.me/5519999999999"
+                  href={`https://wa.me/${storeSettings?.whatsappNumber?.replace(/\D/g, '') || '5519999999999'}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors block font-light"
                 >
-                  WhatsApp: (19) 9999-9999
+                  WhatsApp: {storeSettings?.whatsappNumber || "(19) 9999-9999"}
                 </motion.a>
                 <motion.a
                   whileHover={{ x: 4 }}
