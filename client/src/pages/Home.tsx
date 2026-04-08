@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getLoginUrl } from "@/const";
-import { Menu, Search, MessageCircle, ChevronDown } from "lucide-react";
+import { Menu, Search, MessageCircle, ChevronDown, Scale } from "lucide-react";
+import { useComparison } from "@/contexts/ComparisonContext";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -46,6 +47,7 @@ const cardVariants = {
 export default function Home() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  const { addVehicle, isVehicleSelected, canAddMore } = useComparison();
   const [searchBrand, setSearchBrand] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [minPrice, setMinPrice] = useState("");
@@ -348,10 +350,39 @@ export default function Home() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.35 }}
-                        className="text-3xl md:text-4xl font-bold text-foreground tracking-tight"
+                        className="text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-6"
                       >
                         R$ {formatPrice(typeof vehicle.price === 'string' ? parseFloat(vehicle.price) : vehicle.price).replace("R$ ", "")}
                       </motion.p>
+
+                      {/* Botão de Comparação */}
+                      <motion.button
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (canAddMore() || isVehicleSelected(vehicle.id)) {
+                            addVehicle(vehicle as any);
+                            if (isVehicleSelected(vehicle.id)) {
+                              setLocation("/comparison");
+                            }
+                          }
+                        }}
+                        className={`w-full py-3 px-4 rounded border transition-all flex items-center justify-center gap-2 text-sm font-light ${
+                          isVehicleSelected(vehicle.id)
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : canAddMore()
+                            ? "border-primary text-primary hover:bg-primary/10"
+                            : "border-border text-muted-foreground cursor-not-allowed opacity-50"
+                        }`}
+                        disabled={!canAddMore() && !isVehicleSelected(vehicle.id)}
+                      >
+                        <Scale size={16} />
+                        {isVehicleSelected(vehicle.id) ? "Comparando" : "Comparar"}
+                      </motion.button>
                     </motion.div>
                   </Card>
                 </motion.div>

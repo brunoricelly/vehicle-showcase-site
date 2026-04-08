@@ -4,6 +4,8 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { ComparisonProvider } from "./contexts/ComparisonContext";
+import ComparisonFloatingNav from "./components/ComparisonFloatingNav";
 import Home from "./pages/Home";
 import VehicleDetailNew from "./pages/VehicleDetailNew";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -17,6 +19,7 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/vehicle/:id"} component={VehicleDetailNew} />
+      <Route path={"/comparison"} component={ComparisonPage} />
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/admin/vehicle/:id"} component={AdminVehicleForm} />
       <Route path={"/admin/vehicle/:id/images"} component={AdminVehicleImages} />
@@ -27,6 +30,8 @@ function Router() {
     </Switch>
   );
 }
+
+import ComparisonPage from "./pages/ComparisonPage";
 
 // NOTE: About Theme
 // - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
@@ -40,10 +45,13 @@ function App() {
         defaultTheme="dark"
         // switchable
       >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <ComparisonProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+            <ComparisonFloatingNav />
+          </TooltipProvider>
+        </ComparisonProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

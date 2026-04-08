@@ -90,3 +90,15 @@
 - [x] Histórico de preço
 - [x] Animações parallax ao scroll
 - [x] Testes finais e checkpoint
+
+## Sistema de Comparação de Veículos
+- [x] Criar contexto global para armazenar veículos selecionados
+- [x] Adicionar botão de comparação nos cards
+- [x] Adicionar botão de comparação na página de detalhes
+- [x] Desenvolver página de comparação com layout lado a lado
+- [x] Galeria de imagens para cada veículo na comparação
+- [x] Funcionalidade de remover veículos da comparação
+- [x] Botão para limpar toda a comparação
+- [x] Navegador flutuante mostrando quantidade de veículos selecionados
+- [x] Responsividade mobile para comparação
+- [x] Testes e checkpoint final

@@ -3,13 +3,15 @@ import { useRoute, useLocation } from "wouter";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, X, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, MessageCircle, Scale } from "lucide-react";
+import { useComparison } from "@/contexts/ComparisonContext";
 
 export default function VehicleDetail() {
   const [, params] = useRoute("/vehicle/:id");
   const [, setLocation] = useLocation();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const { addVehicle, isVehicleSelected, canAddMore } = useComparison();
   const { scrollY } = useScroll();
   const opacity = useTransform(scrollY, [0, 200], [1, 0.5]);
 
@@ -306,6 +308,29 @@ export default function VehicleDetail() {
                 <MessageCircle size={18} />
                 Consultar via WhatsApp
               </motion.a>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  if (canAddMore() || isVehicleSelected(vehicle.id)) {
+                    addVehicle(vehicle as any);
+                    if (isVehicleSelected(vehicle.id)) {
+                      setLocation("/comparison");
+                    }
+                  }
+                }}
+                className={`w-full py-3 px-4 rounded border transition-all flex items-center justify-center gap-2 ${
+                  isVehicleSelected(vehicle.id)
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : canAddMore()
+                    ? "border-primary text-primary hover:bg-primary/10"
+                    : "border-border text-muted-foreground cursor-not-allowed opacity-50"
+                }`}
+                disabled={!canAddMore() && !isVehicleSelected(vehicle.id)}
+              >
+                <Scale size={18} />
+                {isVehicleSelected(vehicle.id) ? "Comparando" : "Comparar"}
+              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
