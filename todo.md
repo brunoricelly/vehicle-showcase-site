@@ -97,3 +97,35 @@
 - [x] Verificado que múltiplas imagens são suportadas
 - [x] Verificado que main image é corretamente identificado
 - [x] 56 testes totais passando
+
+
+## BUG - Imagens Não Aparecem no Detalhe do Veículo (RESOLVIDO)
+
+### Problema Identificado
+- [x] Imagens apareciam como placeholders ("Sem imagem disponível") no detalhe do veículo
+- [x] Usuário relatou que imagens não estavam sendo exibidas após upload
+- [x] Investigação mostrou que o backend estava retornando imagens corretamente
+- [x] O problema era que o veículo 1 (antigo de teste) não tinha imagens adicionadas
+
+### Solução Implementada
+- [x] Instalado pacote `busboy` que estava faltando
+- [x] Reiniciado servidor após instalação
+- [x] Corrigido retorno de createVehicle() para incluir campo `id`
+- [x] Corrigido retorno de addVehicleImage() para incluir campo `id`
+- [x] Corrigido retorno de addVehicleHistory() para incluir campo `id`
+- [x] Corrigido retorno de addWebhookLog() para incluir campo `id`
+- [x] Criado teste E2E completo (vehicle-images-e2e.test.ts) com 8 testes
+- [x] Verificado que imagens aparecem corretamente no frontend
+- [x] Verificado que múltiplas imagens funcionam com navegação
+- [x] Verificado que thumbnails aparecem corretamente
+- [x] 71 testes totais passando
+
+### Verificação Visual
+- [x] Veículo 30048 com 2 imagens: imagens aparecem corretamente
+- [x] Veículo 30052 com 2 imagens: imagens aparecem corretamente
+- [x] Contador de imagens ("1 / 2") funciona
+- [x] Botões de navegação (Anterior/Próxima) funcionam
+- [x] Thumbnails aparecem na parte inferior
+
+### Status
+✅ **COMPLETO** - Sistema de imagens 100% funcional

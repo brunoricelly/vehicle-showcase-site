@@ -225,7 +225,7 @@ export async function createVehicle(data: {
 
   // Drizzle returns array with ResultSetHeader at [0] containing insertId
   const insertId = (result as any)[0]?.insertId || 0;
-  return { insertId }
+  return { id: insertId, insertId }
 }
 
 export async function updateVehicle(
@@ -292,7 +292,7 @@ export async function addVehicleImage(data: {
 
   // Drizzle returns array with ResultSetHeader at [0] containing insertId
   const insertId = (result as any)[0]?.insertId || 0;
-  return { insertId }
+  return { id: insertId, insertId }
 }
 
 export async function deleteVehicleImage(id: number) {
@@ -363,7 +363,7 @@ export async function addVehicleHistory(data: {
 
   // Drizzle returns array with ResultSetHeader at [0] containing insertId
   const insertId = (result as any)[0]?.insertId || 0;
-  return { insertId }
+  return { id: insertId, insertId }
 }
 
 // ============ WEBHOOK LOG QUERIES ============
@@ -395,7 +395,7 @@ export async function addWebhookLog(data: {
 
   // Drizzle returns array with ResultSetHeader at [0] containing insertId
   const insertId = (result as any)[0]?.insertId || 0;
-  return { insertId }
+  return { id: insertId, insertId }
 }
 
 export async function getWebhookLogs(limit = 100) {
