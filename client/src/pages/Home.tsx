@@ -150,8 +150,8 @@ export default function Home() {
                 <Search size={20} />
               </motion.button>
               
-              {/* Admin Dropdown */}
-              {user?.role === "admin" && (
+              {/* Admin Dropdown or Login */}
+              {user?.role === "admin" ? (
                 <div className="relative">
                   <motion.button
                     onClick={() => setAdminMenuOpen(!adminMenuOpen)}
@@ -192,6 +192,14 @@ export default function Home() {
                     </motion.div>
                   )}
                 </div>
+              ) : (
+                <motion.button
+                  onClick={() => setLocation("/admin/login")}
+                  whileHover={{ color: "var(--primary)" }}
+                  className="text-sm text-muted-foreground transition-colors"
+                >
+                  Administrador
+                </motion.button>
               )}
             </div>
 
@@ -229,7 +237,7 @@ export default function Home() {
             <button className="block w-full text-left text-sm text-muted-foreground hover:text-primary transition-colors">
               Encontrar veículo
             </button>
-            {user?.role === "admin" && (
+            {user?.role === "admin" ? (
               <>
                 <button
                   onClick={() => {
@@ -250,6 +258,16 @@ export default function Home() {
                   Sair
                 </button>
               </>
+            ) : (
+              <button
+                onClick={() => {
+                  setLocation("/admin/login");
+                  setMenuOpen(false);
+                }}
+                className="block w-full text-left text-sm text-muted-foreground hover:text-primary transition-colors border-t border-border pt-3 mt-3"
+              >
+                Administrador
+              </button>
             )}
           </motion.div>
         </div>

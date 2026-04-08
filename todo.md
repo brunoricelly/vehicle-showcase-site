@@ -188,3 +188,10 @@
 ### Enforcement de Autorização
 - [x] Adicionar validação de authorized_admins no AdminPanel
 - [x] Bloquear acesso se email não está autorizado
+
+## Melhorias Solicitadas - Login Admin
+
+### Frontend
+- [x] Adicionar botão de login na página Home
+- [x] Adicionar email mercadinhonop@gmail.com como autorizado para testes
+- [x] Testar fluxo de login completo
