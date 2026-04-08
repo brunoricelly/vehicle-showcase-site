@@ -274,7 +274,12 @@ export const appRouter = router({
         }
 
         // Convert base64 to buffer
-        const buffer = Buffer.from(input.imageData, "base64");
+        // Remove data URL prefix if present (e.g., "data:image/jpeg;base64,")
+        let base64Data = input.imageData;
+        if (base64Data.includes(",")) {
+          base64Data = base64Data.split(",")[1];
+        }
+        const buffer = Buffer.from(base64Data, "base64");
 
         // Validate image dimensions and file size
         const validation = validateImageDimensions(buffer, input.mimeType);
