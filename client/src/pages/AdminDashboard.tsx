@@ -15,10 +15,10 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="neon-card text-center">
-          <p className="text-secondary text-lg mb-4">&gt; ACCESS DENIED</p>
-          <p className="text-muted-foreground mb-6">ADMIN PRIVILEGES REQUIRED</p>
+          <p className="text-primary text-lg mb-4">&gt; ACESSO NEGADO</p>
+          <p className="text-muted-foreground mb-6">PRIVILÉGIOS DE ADMINISTRADOR NECESSÁRIOS</p>
           <Link href="/">
-            <Button className="neon-button">RETURN HOME</Button>
+            <Button className="neon-button">VOLTAR PARA INÍCIO</Button>
           </Link>
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function AdminDashboard() {
   });
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this vehicle?")) {
+    if (confirm("Tem certeza que deseja deletar este veículo?")) {
       deleteVehicleMutation.mutate({ id });
     }
   };
@@ -39,32 +39,32 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="border-b-2 border-secondary py-6 px-4">
+      <header className="border-b-2 border-primary py-6 px-4">
         <div className="container">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold neon-glow">ADMIN PANEL</h1>
+            <h1 className="text-3xl font-bold neon-glow">PAINEL ADMINISTRATIVO</h1>
             <Link href="/">
-              <Button className="neon-button">← EXIT ADMIN</Button>
+              <Button className="neon-button">← SAIR</Button>
             </Link>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex gap-4 border-b-2 border-secondary pb-4">
+          <div className="flex gap-4 border-b-2 border-primary pb-4">
             <button
               onClick={() => setActiveTab("vehicles")}
               className={`px-4 py-2 font-bold transition-all ${
                 activeTab === "vehicles"
                   ? "text-primary neon-glow border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-secondary"
+                  : "text-muted-foreground hover:text-primary"
               }`}
             >
-              &gt; VEHICLES
+              &gt; VEÍCULOS
             </button>
             <Link href="/admin/history">
               <button
-                className={`px-4 py-2 font-bold transition-all text-muted-foreground hover:text-secondary`}
+                className={`px-4 py-2 font-bold transition-all text-muted-foreground hover:text-primary`}
               >
-                &gt; HISTORY
+                &gt; HISTÓRICO
               </button>
             </Link>
             <button
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
               className={`px-4 py-2 font-bold transition-all ${
                 activeTab === "webhooks"
                   ? "text-primary neon-glow border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-secondary"
+                  : "text-muted-foreground hover:text-primary"
               }`}
             >
               &gt; WEBHOOKS
@@ -87,17 +87,17 @@ export default function AdminDashboard() {
           {activeTab === "vehicles" && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-secondary">&gt; VEHICLE MANAGEMENT</h2>
+                <h2 className="text-2xl font-bold text-primary">&gt; GERENCIAMENTO DE VEÍCULOS</h2>
                 <Link href="/admin/vehicle/new">
                   <Button className="neon-button flex items-center gap-2">
-                    <Plus size={20} /> ADD VEHICLE
+                    <Plus size={20} /> ADICIONAR VEÍCULO
                   </Button>
                 </Link>
               </div>
 
               {isLoading ? (
-                <p className="text-secondary text-center py-12 animate-pulse">
-                  &gt; LOADING VEHICLES...
+                <p className="text-muted-foreground text-center py-12 animate-pulse">
+                  &gt; CARREGANDO VEÍCULOS...
                 </p>
               ) : vehicles && vehicles.length > 0 ? (
                 <div className="space-y-4">
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
                         <div className="flex gap-2">
                           <Link href={`/admin/vehicle/${vehicle.id}`}>
                             <Button className="neon-button flex items-center gap-2">
-                              <Edit2 size={18} /> EDIT
+                              <Edit2 size={18} /> EDITAR
                             </Button>
                           </Link>
                           <Button
@@ -135,9 +135,9 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <div className="text-center py-12 neon-card">
-                  <p className="text-secondary text-lg">&gt; NO VEHICLES FOUND</p>
+                  <p className="text-muted-foreground text-lg">&gt; NENHUM VEÍCULO ENCONTRADO</p>
                   <Link href="/admin/vehicle/new">
-                    <Button className="neon-button mt-4">CREATE FIRST VEHICLE</Button>
+                    <Button className="neon-button mt-4">CRIAR PRIMEIRO VEÍCULO</Button>
                   </Link>
                 </div>
               )}
@@ -146,7 +146,7 @@ export default function AdminDashboard() {
 
           {activeTab === "history" && (
             <div>
-              <h2 className="text-2xl font-bold text-secondary mb-6">&gt; CHANGE HISTORY</h2>
+              <h2 className="text-2xl font-bold text-primary mb-6">&gt; HISTÓRICO DE ALTERAÇÕES</h2>
               <div className="text-center py-12 neon-card">
                 <p className="text-muted-foreground">History view coming soon...</p>
               </div>

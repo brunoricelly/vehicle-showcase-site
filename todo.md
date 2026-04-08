@@ -47,3 +47,15 @@
 - [x] Documentação de integração com n8n
 - [x] Documentação de variáveis de ambiente
 - [x] Checkpoint final e deploy
+
+## Redesign - Inspirado em Exchange Motors
+- [x] Atualizar paleta de cores (preto, branco, verde neon)
+- [x] Redesenhar homepage com layout similar ao Exchange Motors
+- [x] Atualizar cards de veículos com informações corretas
+- [x] Traduzir todo conteúdo para português BR
+- [x] Adicionar informações de contato e localização
+- [x] Atualizar painel administrativo com novo design
+- [x] Adicionar bordas verdes tracejadas (estilo Exchange)
+- [x] Implementar botão WhatsApp flutuante
+- [x] Adicionar seção de "Sobre" com descrição da empresa
+- [x] Testes finais e responsividade

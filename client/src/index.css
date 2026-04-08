@@ -43,76 +43,76 @@
 }
 
 :root {
-  /* Cyberpunk Neon Color Palette */
-  --primary: oklch(0.6 0.3 320); /* Neon Pink/Magenta */
+  /* Exchange Motors Color Palette - Black, White, Neon Green */
+  --primary: oklch(0.85 0.25 110); /* Neon Green */
   --primary-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0.6 0.3 320);
+  --sidebar-primary: oklch(0.85 0.25 110);
   --sidebar-primary-foreground: oklch(0 0 0);
-  --chart-1: oklch(0.6 0.3 320);
-  --chart-2: oklch(0.6 0.3 180);
-  --chart-3: oklch(0.6 0.3 270);
-  --chart-4: oklch(0.6 0.3 320);
-  --chart-5: oklch(0.6 0.3 180);
+  --chart-1: oklch(0.85 0.25 110);
+  --chart-2: oklch(0.85 0.25 110);
+  --chart-3: oklch(0.85 0.25 110);
+  --chart-4: oklch(0.85 0.25 110);
+  --chart-5: oklch(0.85 0.25 110);
   --radius: 0.5rem;
-  --background: oklch(0.05 0 0); /* Very dark black */
-  --foreground: oklch(0.95 0.05 320); /* Bright neon pink */
-  --card: oklch(0.08 0 0); /* Dark with slight tint */
-  --card-foreground: oklch(0.95 0.05 320);
+  --background: oklch(0.05 0 0); /* Pure black */
+  --foreground: oklch(0.98 0.01 0); /* Pure white */
+  --card: oklch(0.08 0 0); /* Very dark gray */
+  --card-foreground: oklch(0.98 0.01 0);
   --popover: oklch(0.08 0 0);
-  --popover-foreground: oklch(0.95 0.05 320);
-  --secondary: oklch(0.6 0.3 180); /* Neon Cyan */
+  --popover-foreground: oklch(0.98 0.01 0);
+  --secondary: oklch(0.85 0.25 110); /* Neon Green */
   --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.7 0.1 320);
-  --accent: oklch(0.6 0.3 270); /* Neon Purple */
+  --muted: oklch(0.4 0 0); /* Gray */
+  --muted-foreground: oklch(0.7 0 0); /* Light gray */
+  --accent: oklch(0.85 0.25 110); /* Neon Green */
   --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.6 0.3 0); /* Neon Red */
-  --destructive-foreground: oklch(0 0 0);
-  --border: oklch(0.6 0.3 180); /* Neon Cyan */
+  --destructive: oklch(0.6 0.25 0); /* Red */
+  --destructive-foreground: oklch(0.98 0.01 0);
+  --border: oklch(0.85 0.25 110); /* Neon Green */
   --input: oklch(0.1 0 0);
-  --ring: oklch(0.6 0.3 180);
+  --ring: oklch(0.85 0.25 110);
   --sidebar: oklch(0.08 0 0);
-  --sidebar-foreground: oklch(0.95 0.05 320);
-  --sidebar-accent: oklch(0.6 0.3 320);
+  --sidebar-foreground: oklch(0.98 0.01 0);
+  --sidebar-accent: oklch(0.85 0.25 110);
   --sidebar-accent-foreground: oklch(0 0 0);
-  --sidebar-border: oklch(0.6 0.3 180);
-  --sidebar-ring: oklch(0.6 0.3 180);
+  --sidebar-border: oklch(0.85 0.25 110);
+  --sidebar-ring: oklch(0.85 0.25 110);
 }
 
 .dark {
-  /* Cyberpunk Neon - Dark theme (same as root) */
-  --primary: oklch(0.6 0.3 320);
+  /* Exchange Motors - Dark theme (same as root) */
+  --primary: oklch(0.85 0.25 110);
   --primary-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0.6 0.3 320);
+  --sidebar-primary: oklch(0.85 0.25 110);
   --sidebar-primary-foreground: oklch(0 0 0);
   --background: oklch(0.05 0 0);
-  --foreground: oklch(0.95 0.05 320);
+  --foreground: oklch(0.98 0.01 0);
   --card: oklch(0.08 0 0);
-  --card-foreground: oklch(0.95 0.05 320);
+  --card-foreground: oklch(0.98 0.01 0);
   --popover: oklch(0.08 0 0);
-  --popover-foreground: oklch(0.95 0.05 320);
-  --secondary: oklch(0.6 0.3 180);
+  --popover-foreground: oklch(0.98 0.01 0);
+  --secondary: oklch(0.85 0.25 110);
   --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.7 0.1 320);
-  --accent: oklch(0.6 0.3 270);
+  --muted: oklch(0.4 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --accent: oklch(0.85 0.25 110);
   --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.6 0.3 0);
-  --destructive-foreground: oklch(0 0 0);
-  --border: oklch(0.6 0.3 180);
+  --destructive: oklch(0.6 0.25 0);
+  --destructive-foreground: oklch(0.98 0.01 0);
+  --border: oklch(0.85 0.25 110);
   --input: oklch(0.1 0 0);
-  --ring: oklch(0.6 0.3 180);
-  --chart-1: oklch(0.6 0.3 320);
-  --chart-2: oklch(0.6 0.3 180);
-  --chart-3: oklch(0.6 0.3 270);
-  --chart-4: oklch(0.6 0.3 320);
-  --chart-5: oklch(0.6 0.3 180);
+  --ring: oklch(0.85 0.25 110);
+  --chart-1: oklch(0.85 0.25 110);
+  --chart-2: oklch(0.85 0.25 110);
+  --chart-3: oklch(0.85 0.25 110);
+  --chart-4: oklch(0.85 0.25 110);
+  --chart-5: oklch(0.85 0.25 110);
   --sidebar: oklch(0.08 0 0);
-  --sidebar-foreground: oklch(0.95 0.05 320);
-  --sidebar-accent: oklch(0.6 0.3 320);
+  --sidebar-foreground: oklch(0.98 0.01 0);
+  --sidebar-accent: oklch(0.85 0.25 110);
   --sidebar-accent-foreground: oklch(0 0 0);
-  --sidebar-border: oklch(0.6 0.3 180);
-  --sidebar-ring: oklch(0.6 0.3 180);
+  --sidebar-border: oklch(0.85 0.25 110);
+  --sidebar-ring: oklch(0.85 0.25 110);
 }
 
 @layer base {
@@ -177,46 +177,46 @@
     }
   }
 }
-/* Cyberpunk Neon Effects */
+/* Exchange Motors Green Effects */
 .neon-glow {
-  text-shadow: 0 0 10px oklch(0.6 0.3 320), 0 0 20px oklch(0.6 0.3 180);
-  box-shadow: 0 0 10px oklch(0.6 0.3 320), 0 0 20px oklch(0.6 0.3 180);
+  text-shadow: 0 0 10px oklch(0.85 0.25 110), 0 0 20px oklch(0.85 0.25 110);
+  box-shadow: 0 0 10px oklch(0.85 0.25 110), 0 0 20px oklch(0.85 0.25 110);
 }
 
 .neon-border {
-  border-color: oklch(0.6 0.3 180);
-  box-shadow: 0 0 10px oklch(0.6 0.3 180), inset 0 0 10px oklch(0.6 0.3 180 / 0.1);
+  border-color: oklch(0.85 0.25 110);
+  box-shadow: 0 0 10px oklch(0.85 0.25 110), inset 0 0 10px oklch(0.85 0.25 110 / 0.1);
 }
 
 .neon-button {
   @apply px-6 py-2 font-bold border-2 border-primary text-primary transition-all duration-300;
-  text-shadow: 0 0 10px oklch(0.6 0.3 320);
-  box-shadow: 0 0 10px oklch(0.6 0.3 320 / 0.3), inset 0 0 10px oklch(0.6 0.3 320 / 0.1);
+  text-shadow: 0 0 10px oklch(0.85 0.25 110);
+  box-shadow: 0 0 10px oklch(0.85 0.25 110 / 0.3), inset 0 0 10px oklch(0.85 0.25 110 / 0.1);
 }
 
 .neon-button:hover {
   @apply bg-primary text-black;
-  box-shadow: 0 0 20px oklch(0.6 0.3 320), 0 0 40px oklch(0.6 0.3 180);
+  box-shadow: 0 0 20px oklch(0.85 0.25 110), 0 0 40px oklch(0.85 0.25 110);
   text-shadow: none;
 }
 
 .neon-card {
-  @apply bg-card border-2 border-secondary p-6;
-  box-shadow: 0 0 10px oklch(0.6 0.3 180 / 0.3), inset 0 0 10px oklch(0.6 0.3 180 / 0.1);
+  @apply bg-card border-2 border-primary p-6;
+  box-shadow: 0 0 10px oklch(0.85 0.25 110 / 0.3), inset 0 0 10px oklch(0.85 0.25 110 / 0.1);
 }
 
 .neon-card:hover {
-  box-shadow: 0 0 20px oklch(0.6 0.3 180 / 0.6), inset 0 0 15px oklch(0.6 0.3 180 / 0.2);
+  box-shadow: 0 0 20px oklch(0.85 0.25 110 / 0.6), inset 0 0 15px oklch(0.85 0.25 110 / 0.2);
 }
 
 .neon-input {
-  @apply bg-input border-2 border-secondary text-foreground;
-  box-shadow: inset 0 0 10px oklch(0.6 0.3 180 / 0.1);
+  @apply bg-input border-2 border-primary text-foreground;
+  box-shadow: inset 0 0 10px oklch(0.85 0.25 110 / 0.1);
 }
 
 .neon-input:focus {
   @apply outline-none border-primary;
-  box-shadow: inset 0 0 10px oklch(0.6 0.3 180 / 0.2), 0 0 10px oklch(0.6 0.3 320 / 0.3);
+  box-shadow: inset 0 0 10px oklch(0.85 0.25 110 / 0.2), 0 0 10px oklch(0.85 0.25 110 / 0.3);
 }
 
 /* HUD Corner Brackets */
@@ -230,7 +230,7 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  border: 2px solid oklch(0.6 0.3 180);
+  border: 2px solid oklch(0.85 0.25 110);
 }
 
 .hud-corner::before {
@@ -271,8 +271,8 @@
   bottom: 0;
   background: repeating-linear-gradient(
     0deg,
-    oklch(0.6 0.3 180 / 0.03),
-    oklch(0.6 0.3 180 / 0.03) 1px,
+    oklch(0.85 0.25 110 / 0.03),
+    oklch(0.85 0.25 110 / 0.03) 1px,
     transparent 1px,
     transparent 2px
   );
@@ -283,10 +283,10 @@
 /* Pulse glow animation */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 5px oklch(0.6 0.3 320 / 0.5), 0 0 10px oklch(0.6 0.3 180 / 0.3);
+    box-shadow: 0 0 5px oklch(0.85 0.25 110 / 0.5), 0 0 10px oklch(0.85 0.25 110 / 0.3);
   }
   50% {
-    box-shadow: 0 0 20px oklch(0.6 0.3 320 / 0.8), 0 0 30px oklch(0.6 0.3 180 / 0.6);
+    box-shadow: 0 0 20px oklch(0.85 0.25 110 / 0.8), 0 0 30px oklch(0.85 0.25 110 / 0.6);
   }
 }
 
@@ -305,10 +305,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.6 0.3 180);
+  background: oklch(0.85 0.25 110);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.6 0.3 320);
+  background: oklch(0.85 0.25 110);
 }
