@@ -127,8 +127,8 @@
 - [x] Criar página /admin/dashboard
 - [x] Implementar módulo de Configurações (store_settings)
 - [x] Implementar módulo de Estoque (CRUD de veículos)
-- [ ] Adicionar filtros e busca no módulo de estoque
-- [ ] Implementar formulários com validação
+- [x] Adicionar filtros e busca no módulo de estoque
+- [x] Implementar formulários com validação
 
 ### Dados Dinâmicos
 - [ ] Remover valores hardcoded da Navbar (telefone, endereço)

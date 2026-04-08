@@ -366,12 +366,12 @@ export default function AdminPanel() {
                             <div className="text-xs text-muted-foreground">{vehicle.category}</div>
                           </td>
                           <td className="py-3 px-4">{vehicle.year}</td>
-                          <td className="py-3 px-4">{(vehicle.mileage as number).toLocaleString()} km</td>
+                          <td className="py-3 px-4">{vehicle.mileage ? (vehicle.mileage as number).toLocaleString() : '0'} km</td>
                           <td className="py-3 px-4">
-                            {new Intl.NumberFormat("pt-BR", {
+                            {vehicle.price ? new Intl.NumberFormat("pt-BR", {
                               style: "currency",
                               currency: "BRL",
-                            }).format(Number(vehicle.price))}
+                            }).format(Number(vehicle.price)) : 'R$ 0,00'}
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex gap-2">
