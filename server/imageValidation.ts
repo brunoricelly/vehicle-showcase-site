@@ -26,8 +26,8 @@ export interface ImageValidationResult {
  * Default validation configuration for vehicle images
  */
 export const DEFAULT_IMAGE_CONFIG: ImageValidationConfig = {
-  minWidth: 1024,
-  minHeight: 768,
+  minWidth: 0, // Sem limite mínimo
+  minHeight: 0, // Sem limite mínimo
   maxWidth: 8000,
   maxHeight: 6000,
   maxFileSizeBytes: 20 * 1024 * 1024, // 20MB

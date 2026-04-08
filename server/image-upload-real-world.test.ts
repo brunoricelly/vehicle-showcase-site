@@ -124,7 +124,7 @@ describe("Image Upload - Real World Scenarios", () => {
   });
 
   describe("Upload with invalid images", () => {
-    it("should reject image too small", () => {
+    it("should accept image with any dimensions", () => {
       // Create PNG with 512x384 (below minimum 1024x768)
       const buffer = Buffer.from([
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
@@ -138,10 +138,11 @@ describe("Image Upload - Real World Scenarios", () => {
 
       const result = validateImageDimensions(buffer, "image/png");
 
-      expect(result.valid).toBe(false);
-      expect(result.error).toContain("mínima");
+      expect(result.valid).toBe(true);
+      expect(result.width).toBe(512);
+      expect(result.height).toBe(384);
 
-      console.log(`✅ Small image rejected: ${result.error}`);
+      console.log(`✅ Small image accepted: ${result.width}x${result.height}px`);
     });
 
     it("should reject image too large", () => {
