@@ -165,3 +165,11 @@
 ### Status
 - [x] **COMPLETO** - Validação e otimização de imagens 100% funcional
 - 85 testes totais passando
+
+
+## BUG - Error ao fazer upload de imagens
+
+- [x] Corrigir erro "Cannot read properties of undefined (reading 'width')" no onSuccess
+- [x] O problema ocorre quando data.dimensions é undefined
+- [x] Adicionar validação de data antes de acessar dimensions
+- [x] Testes passando (85 testes)

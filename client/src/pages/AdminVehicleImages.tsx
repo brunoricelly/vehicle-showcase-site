@@ -40,7 +40,11 @@ export default function AdminVehicleImages() {
   const utils = trpc.useUtils();
   const uploadMutation = trpc.vehicleImages.upload.useMutation({
     onSuccess: async (data) => {
-      toast.success(`✅ Imagem enviada: ${data.dimensions.width}x${data.dimensions.height}px (${data.fileSize})`);
+      if (data && data.dimensions) {
+        toast.success(`✅ Imagem enviada: ${data.dimensions.width}x${data.dimensions.height}px (${data.fileSize})`);
+      } else {
+        toast.success("✅ Imagem enviada com sucesso!");
+      }
       // Invalidate cache to refresh images
       await utils.vehicleImages.getByVehicleId.invalidate({ vehicleId });
     },
