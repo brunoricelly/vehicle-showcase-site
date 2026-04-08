@@ -1,34 +1,40 @@
 import {
-  int,
-  mysqlEnum,
-  mysqlTable,
+  integer,
+  pgEnum,
+  pgTable,
   text,
   timestamp,
   varchar,
-  decimal,
+  numeric,
   boolean,
   json,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 
 /**
  * Core user table backing auth flow.
  * Extend this file with additional tables as your product grows.
  * Columns use camelCase to match both database fields and generated types.
  */
-export const users = mysqlTable("users", {
+
+// Enums
+export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const actionEnum = pgEnum("action", ["created", "updated", "deleted"]);
+export const statusEnum = pgEnum("status", ["success", "failed", "pending"]);
+
+export const users = pgTable("users", {
   /**
    * Surrogate primary key. Auto-incremented numeric value managed by the database.
    * Use this for relations between tables.
    */
-  id: int("id").autoincrement().primaryKey(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: roleEnum("role").default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
@@ -38,23 +44,23 @@ export type InsertUser = typeof users.$inferInsert;
 /**
  * Vehicles table - stores vehicle information
  */
-export const vehicles = mysqlTable("vehicles", {
-  id: int("id").autoincrement().primaryKey(),
+export const vehicles = pgTable("vehicles", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   brand: varchar("brand", { length: 100 }).notNull(),
   model: varchar("model", { length: 100 }).notNull(),
-  year: int("year").notNull(),
+  year: integer("year").notNull(),
   category: varchar("category", { length: 50 }).notNull(), // e.g., "sedan", "suv", "sports", "truck"
-  price: decimal("price", { precision: 12, scale: 2 }).notNull(),
-  mileage: int("mileage"), // in kilometers
+  price: numeric("price", { precision: 12, scale: 2 }).notNull(),
+  mileage: integer("mileage"), // in kilometers
   color: varchar("color", { length: 50 }),
   transmission: varchar("transmission", { length: 50 }), // "manual", "automatic"
   fuelType: varchar("fuelType", { length: 50 }), // "gasoline", "diesel", "electric", "hybrid"
   isActive: boolean("isActive").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  createdBy: int("createdBy").notNull(), // user id
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  createdBy: integer("createdBy").notNull(), // user id
 });
 
 export type Vehicle = typeof vehicles.$inferSelect;
@@ -63,12 +69,12 @@ export type InsertVehicle = typeof vehicles.$inferInsert;
 /**
  * Vehicle images table - stores image metadata and S3 references
  */
-export const vehicleImages = mysqlTable("vehicle_images", {
-  id: int("id").autoincrement().primaryKey(),
-  vehicleId: int("vehicleId").notNull(), // references vehicles.id
+export const vehicleImages = pgTable("vehicle_images", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  vehicleId: integer("vehicleId").notNull(), // references vehicles.id
   imageUrl: text("imageUrl").notNull(), // S3 CDN URL
   imageKey: varchar("imageKey", { length: 255 }).notNull(), // S3 key for reference
-  displayOrder: int("displayOrder").default(0).notNull(),
+  displayOrder: integer("displayOrder").default(0).notNull(),
   isMainImage: boolean("isMainImage").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -79,11 +85,11 @@ export type InsertVehicleImage = typeof vehicleImages.$inferInsert;
 /**
  * Vehicle history table - tracks all changes to vehicles
  */
-export const vehicleHistory = mysqlTable("vehicle_history", {
-  id: int("id").autoincrement().primaryKey(),
-  vehicleId: int("vehicleId").notNull(), // references vehicles.id
-  action: mysqlEnum("action", ["created", "updated", "deleted"]).notNull(),
-  changedBy: int("changedBy").notNull(), // user id
+export const vehicleHistory = pgTable("vehicle_history", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  vehicleId: integer("vehicleId").notNull(), // references vehicles.id
+  action: actionEnum("action").notNull(),
+  changedBy: integer("changedBy").notNull(), // user id
   changedByName: varchar("changedByName", { length: 255 }),
   changedByEmail: varchar("changedByEmail", { length: 320 }),
   changes: json("changes"), // JSON object with before/after values
@@ -97,13 +103,13 @@ export type InsertVehicleHistory = typeof vehicleHistory.$inferInsert;
 /**
  * Webhook logs table - tracks all webhook requests for audit and debugging
  */
-export const webhookLogs = mysqlTable("webhook_logs", {
-  id: int("id").autoincrement().primaryKey(),
+export const webhookLogs = pgTable("webhook_logs", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   action: varchar("action", { length: 50 }).notNull(), // "create", "delete"
-  status: mysqlEnum("status", ["success", "failed", "pending"]).notNull(),
+  status: statusEnum("status").notNull(),
   requestData: json("requestData"), // Full request payload
   responseData: json("responseData"), // Response or error details
-  vehicleId: int("vehicleId"), // references vehicles.id if applicable
+  vehicleId: integer("vehicleId"), // references vehicles.id if applicable
   errorMessage: text("errorMessage"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -114,8 +120,8 @@ export type InsertWebhookLog = typeof webhookLogs.$inferInsert;
 /**
  * Store settings table - stores global configuration for the shop
  */
-export const storeSettings = mysqlTable("store_settings", {
-  id: int("id").autoincrement().primaryKey(),
+export const storeSettings = pgTable("store_settings", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   storeName: varchar("storeName", { length: 255 }).notNull(),
   storeDescription: text("storeDescription"),
   address: text("address"),
@@ -132,8 +138,8 @@ export const storeSettings = mysqlTable("store_settings", {
   logoUrl: text("logoUrl"),
   bannerUrl: text("bannerUrl"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  updatedBy: int("updatedBy"), // user id
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  updatedBy: integer("updatedBy"), // user id
 });
 
 export type StoreSettings = typeof storeSettings.$inferSelect;
@@ -142,14 +148,14 @@ export type InsertStoreSettings = typeof storeSettings.$inferInsert;
 /**
  * Store contacts table - stores social media and contact information
  */
-export const storeContacts = mysqlTable("store_contacts", {
-  id: int("id").autoincrement().primaryKey(),
+export const storeContacts = pgTable("store_contacts", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   type: varchar("type", { length: 50 }).notNull(), // "whatsapp", "instagram", "facebook", "youtube", "email"
   value: varchar("value", { length: 255 }).notNull(),
   isActive: boolean("isActive").default(true).notNull(),
-  displayOrder: int("displayOrder").default(0).notNull(),
+  displayOrder: integer("displayOrder").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type StoreContact = typeof storeContacts.$inferSelect;
@@ -158,13 +164,13 @@ export type InsertStoreContact = typeof storeContacts.$inferInsert;
 /**
  * Authorized admins table - stores emails authorized to access admin panel
  */
-export const authorizedAdmins = mysqlTable("authorized_admins", {
-  id: int("id").autoincrement().primaryKey(),
+export const authorizedAdmins = pgTable("authorized_admins", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   email: varchar("email", { length: 320 }).notNull().unique(),
   isActive: boolean("isActive").default(true).notNull(),
-  authorizedBy: int("authorizedBy"), // user id who authorized this email
+  authorizedBy: integer("authorizedBy"), // user id who authorized this email
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type AuthorizedAdmin = typeof authorizedAdmins.$inferSelect;

@@ -198,3 +198,43 @@
 - [x] 95 testes passando com novas configuracoes
 - [x] Suporte a resolucao 4K (8000x6000)
 - [x] Suporte a imagens de alta qualidade ate 20MB
+
+
+## Migração para PostgreSQL e Deploy em VPS
+
+### Fase 1: Atualizar Drizzle ORM
+- [x] Instalar driver PostgreSQL (pg)
+- [x] Atualizar drizzle.config.ts para usar PostgreSQL
+- [x] Atualizar package.json
+
+### Fase 2: Atualizar Schema
+- [x] Converter tipos MySQL para PostgreSQL
+- [x] Regenerar migrations
+- [x] Testar schema localmente
+- [x] Criar 8 tabelas PostgreSQL com tipos corretos
+- [x] Criar 3 enums (role, action, status)
+
+### Fase 3: Documentação
+- [x] Criar DEPLOY.md com instruções completas
+- [x] Criar POSTGRES_MIGRATION.md com detalhes da migracao
+- [x] Criar README_POSTGRES.md com guia de uso
+- [x] Documentar variaveis de ambiente necessarias
+- [x] Incluir instrucoes para Docker
+- [x] Incluir instrucoes para Nginx + SSL
+
+### Fase 4: Repositório GitHub
+- [ ] Verificar .gitignore
+- [ ] Fazer commit de todas as mudanças
+- [ ] Preparar para push
+
+### Fase 5: Guia de Deploy
+- [x] Instrucoes para deploy em VPS (DEPLOY.md)
+- [x] Instrucoes para Docker (docker-compose)
+- [x] Instrucoes para Railway/Render
+- [x] Troubleshooting comum
+
+### Status
+- [x] **COMPLETO** - Migracao para PostgreSQL 100% pronta
+- [x] Migration SQL gerada: drizzle/0000_fair_guardsmen.sql
+- [x] Documentacao completa criada
+- [x] Pronto para deploy em VPS
