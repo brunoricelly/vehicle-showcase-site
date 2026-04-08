@@ -315,8 +315,8 @@ export const appRouter = router({
           imageUrl: url,
           imageKey: fileKey,
           dimensions: {
-            width: validation.width,
-            height: validation.height,
+            width: validation.width || 0,
+            height: validation.height || 0,
           },
           fileSize: formatFileSize(validation.fileSizeBytes || 0),
         };

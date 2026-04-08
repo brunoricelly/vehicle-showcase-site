@@ -173,3 +173,15 @@
 - [x] O problema ocorre quando data.dimensions é undefined
 - [x] Adicionar validação de data antes de acessar dimensions
 - [x] Testes passando (85 testes)
+
+
+## BUG - Validação de imagens rejeitando uploads válidos
+
+- [x] Verificar logs do servidor para ver qual erro está sendo retornado
+- [x] Testar com imagens reais do usuário
+- [x] Diagnosticar se é problema de dimensões, tamanho ou formato
+- [x] Corrigir lógica de validação se necessário
+- [x] Testar upload com múltiplas imagens
+- [x] Adicionar fallback para dimensions quando não conseguir ler
+- [x] Criar 10 testes de upload real
+- [x] 95 testes totais passando
