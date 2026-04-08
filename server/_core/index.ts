@@ -4,6 +4,8 @@ import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
+import { storagePut } from "../storage";
+import busboy from "busboy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -37,23 +39,52 @@ async function startServer() {
   registerOAuthRoutes(app);
   
   // File upload endpoint
-  app.post("/api/upload", express.raw({ type: "*/*", limit: "2mb" }), async (req, res) => {
+  app.post("/api/upload", async (req, res) => {
     try {
-      const file = req.body;
-      const contentType = req.headers["content-type"] || "application/octet-stream";
-      
-      if (!file || file.length === 0) {
-        return res.status(400).json({ error: "No file provided" });
-      }
+      const bb = busboy({ headers: req.headers, limits: { fileSize: 2 * 1024 * 1024 } });
+      let fileBuffer: Buffer | null = null;
+      let contentType = "application/octet-stream";
+      let fileName = "file";
 
-      if (file.length > 2 * 1024 * 1024) {
-        return res.status(400).json({ error: "File too large" });
-      }
+      bb.on("file", (fieldname: string, file: any, info: any) => {
+        fileName = info.filename || "file";
+        contentType = info.mimeType || "application/octet-stream";
+        const chunks: Buffer[] = [];
 
-      const base64 = file.toString("base64");
-      const dataUrl = `data:${contentType};base64,${base64}`;
-      
-      res.json({ url: dataUrl });
+        file.on("data", (data: Buffer) => {
+          chunks.push(data);
+        });
+
+        file.on("end", () => {
+          fileBuffer = Buffer.concat(chunks);
+        });
+      });
+
+      bb.on("close", async () => {
+        try {
+          if (!fileBuffer || fileBuffer.length === 0) {
+            return res.status(400).json({ error: "No file provided" });
+          }
+
+          const { url } = await storagePut(
+            `logos/${Date.now()}-${fileName}`,
+            fileBuffer,
+            contentType
+          );
+
+          res.json({ url });
+        } catch (error) {
+          console.error("Storage upload error:", error);
+          res.status(500).json({ error: "Upload failed" });
+        }
+      });
+
+      bb.on("error", (error: Error) => {
+        console.error("Busboy error:", error);
+        res.status(400).json({ error: "Invalid file upload" });
+      });
+
+      req.pipe(bb);
     } catch (error) {
       console.error("Upload error:", error);
       res.status(500).json({ error: "Upload failed" });
