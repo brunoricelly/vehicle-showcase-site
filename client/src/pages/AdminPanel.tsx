@@ -70,13 +70,22 @@ export default function AdminPanel() {
     }
   }, [storeSettings]);
 
-  // Check if user is admin
-  if (user?.role !== "admin") {
+  // Check if user is admin and email is authorized
+  const { data: isEmailAuthorized, isLoading: isCheckingAuth } = trpc.admin.isEmailAuthorized.useQuery(
+    { email: user?.email || "" },
+    { enabled: !!user?.email }
+  );
+
+  if (user?.role !== "admin" || (isEmailAuthorized === false && !isCheckingAuth)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="p-8 text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Acesso Negado</h1>
-          <p className="text-muted-foreground mb-6">Você não tem permissão para acessar esta página.</p>
+          <p className="text-muted-foreground mb-6">
+            {user?.role !== "admin" 
+              ? "Você não tem permissão para acessar esta página."
+              : "Seu email não está autorizado para acessar o painel administrativo."}
+          </p>
           <Button onClick={() => setLocation("/")} variant="default">
             Voltar para Home
           </Button>

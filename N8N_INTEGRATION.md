@@ -252,3 +252,175 @@ Para dúvidas ou problemas:
 ## Changelog
 
 - **v1.0.0** (2026-04-08): Versão inicial com suporte a criar/remover veículos via webhook
+
+### 3. Adicionar Email Autorizado para Admin via Webhook
+
+**URL**: `POST /api/trpc/adminWebhooks.addAuthorizedEmail`
+
+**Autenticação**: API Key no payload
+
+**Payload**:
+```json
+{
+  "apiKey": "sua-chave-api-webhook",
+  "email": "admin@example.com"
+}
+```
+
+**Resposta de Sucesso** (200):
+```json
+{
+  "success": true,
+  "id": 1
+}
+```
+
+**Resposta de Erro** (401):
+```json
+{
+  "code": "UNAUTHORIZED",
+  "message": "Invalid API key"
+}
+```
+
+### 4. Remover Email Autorizado para Admin via Webhook
+
+**URL**: `POST /api/trpc/adminWebhooks.removeAuthorizedEmail`
+
+**Autenticação**: API Key no payload
+
+**Payload**:
+```json
+{
+  "apiKey": "sua-chave-api-webhook",
+  "email": "admin@example.com"
+}
+```
+
+**Resposta de Sucesso** (200):
+```json
+{
+  "success": true
+}
+```
+
+**Resposta de Erro** (401):
+```json
+{
+  "code": "UNAUTHORIZED",
+  "message": "Invalid API key"
+}
+```
+
+## Integração com WhatsApp para Gerenciar Admins
+
+### Fluxo de Autorização de Admin via WhatsApp
+
+```
+1. Webhook WhatsApp (Recebe mensagem com email)
+   ↓
+2. Parse JSON (Extrai email da mensagem)
+   ↓
+3. IF (Verifica se é comando "autorizar admin")
+   ├─ SIM: HTTP Request (POST /adminWebhooks.addAuthorizedEmail)
+   │       ↓
+   │       Response Handler (Sucesso/Erro)
+   │       ↓
+   │       WhatsApp Send (Confirma autorização)
+   │
+   └─ NÃO: IF (Verifica se é comando "remover admin")
+           ├─ SIM: HTTP Request (POST /adminWebhooks.removeAuthorizedEmail)
+           │       ↓
+           │       Response Handler (Sucesso/Erro)
+           │       ↓
+           │       WhatsApp Send (Confirma remoção)
+           │
+           └─ NÃO: WhatsApp Send (Comando não reconhecido)
+```
+
+### Exemplo de Integração com n8n para Autorizar Admin
+
+**HTTP Request Node**:
+
+```
+Method: POST
+URL: https://seu-dominio.manus.space/api/trpc/adminWebhooks.addAuthorizedEmail
+Headers:
+  - Content-Type: application/json
+
+Body (JSON):
+{
+  "apiKey": "${WEBHOOK_API_KEY}",
+  "email": "{{ $json.email }}"
+}
+```
+
+### Exemplo com cURL - Adicionar Email Autorizado
+
+```bash
+curl -X POST https://seu-dominio.manus.space/api/trpc/adminWebhooks.addAuthorizedEmail \
+  -H "Content-Type: application/json" \
+  -d '{
+    "apiKey": "seu-webhook-api-key",
+    "email": "novo-admin@example.com"
+  }'
+```
+
+### Exemplo com cURL - Remover Email Autorizado
+
+```bash
+curl -X POST https://seu-dominio.manus.space/api/trpc/adminWebhooks.removeAuthorizedEmail \
+  -H "Content-Type: application/json" \
+  -d '{
+    "apiKey": "seu-webhook-api-key",
+    "email": "admin-remover@example.com"
+  }'
+```
+
+## Fluxo Completo de Login Administrativo
+
+### 1. Autorizar novo administrador via WhatsApp
+
+```
+Usuário: "autorizar admin: novo-admin@example.com"
+   ↓
+n8n recebe mensagem
+   ↓
+n8n faz POST para /adminWebhooks.addAuthorizedEmail
+   ↓
+Email é adicionado à tabela authorized_admins
+   ↓
+n8n confirma ao usuário: "Admin autorizado com sucesso!"
+```
+
+### 2. Admin faz login no painel
+
+```
+Admin acessa https://seu-dominio.manus.space/admin/login
+   ↓
+Clica em "Entrar com Google"
+   ↓
+Sistema verifica se email está na tabela authorized_admins
+   ↓
+Se autorizado: Redireciona para /admin (painel administrativo)
+Se não autorizado: Mostra erro "Email não autorizado"
+```
+
+### 3. Remover acesso de administrador
+
+```
+Usuário: "remover admin: ex-admin@example.com"
+   ↓
+n8n recebe mensagem
+   ↓
+n8n faz POST para /adminWebhooks.removeAuthorizedEmail
+   ↓
+Email é removido da tabela authorized_admins
+   ↓
+Ex-admin não consegue mais fazer login
+```
+
+## Changelog
+
+- **v1.0.0** (2026-04-08): Versão inicial com suporte a criar/remover veículos via webhook
+- **v1.1.0** (2026-04-08): Adicionado suporte para gerenciar emails autorizados de admin via webhook

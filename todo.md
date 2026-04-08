@@ -159,28 +159,32 @@
 ## Sistema de Login Administrativo com Google OAuth
 
 ### Banco de Dados
-- [ ] Criar tabela `authorized_admins` com emails autorizados
-- [ ] Adicionar campos: email, createdAt, updatedAt, authorizedBy
+- [x] Criar tabela `authorized_admins` com emails autorizados
+- [x] Adicionar campos: email, createdAt, updatedAt, authorizedBy
 
 ### Backend (tRPC Procedures)
-- [ ] Implementar procedure para listar emails autorizados
-- [ ] Implementar procedure para adicionar email autorizado (admin only)
-- [ ] Implementar procedure para remover email autorizado (admin only)
-- [ ] Implementar webhook para n8n adicionar/remover emails via WhatsApp
+- [x] Implementar procedure para listar emails autorizados
+- [x] Implementar procedure para adicionar email autorizado (admin only)
+- [x] Implementar procedure para remover email autorizado (admin only)
+- [x] Implementar webhook para n8n adicionar/remover emails via WhatsApp
 
 ### Frontend - Página de Login
-- [ ] Criar página /admin/login com formulário
-- [ ] Implementar botão "Login com Google"
-- [ ] Validar email contra lista de autorizados
-- [ ] Redirecionar para painel se autorizado
-- [ ] Mostrar mensagem de erro se email não autorizado
+- [x] Criar página /admin/login com formulário
+- [x] Implementar botão "Login com Google"
+- [x] Validar email contra lista de autorizados
+- [x] Redirecionar para painel se autorizado
+- [x] Mostrar mensagem de erro se email não autorizado
 
 ### Integração n8n
-- [ ] Documentar endpoint webhook para adicionar emails
-- [ ] Documentar endpoint webhook para remover emails
+- [x] Documentar endpoint webhook para adicionar emails
+- [x] Documentar endpoint webhook para remover emails
 - [ ] Testar integração com n8n + WhatsApp
 
 ### Testes
-- [ ] Testes de validação de emails autorizados
-- [ ] Testes de webhook do n8n
-- [ ] Testes de fluxo de login
+- [x] Testes de validação de emails autorizados
+- [x] Testes de webhook do n8n
+- [x] Testes de fluxo de login (validação no AdminPanel e integração)
+
+### Enforcement de Autorização
+- [x] Adicionar validação de authorized_admins no AdminPanel
+- [x] Bloquear acesso se email não está autorizado
