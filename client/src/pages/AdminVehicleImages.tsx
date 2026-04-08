@@ -254,8 +254,8 @@ export default function AdminVehicleImages() {
 
                 {/* Validation Info */}
                 <div className="mt-4 p-3 bg-secondary/10 border border-secondary rounded text-xs text-muted-foreground space-y-1">
-                  <p>✅ Dimensões: 400x300 até 4000x3000px</p>
-                  <p>✅ Tamanho máx: 5MB</p>
+                  <p>✅ Dimensões: 1024x768 até 8000x6000px</p>
+                  <p>✅ Tamanho máx: 20MB</p>
                   <p>✅ Formatos: JPEG, PNG, WebP</p>
                 </div>
 
