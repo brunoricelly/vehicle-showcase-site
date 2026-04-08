@@ -9,25 +9,26 @@ export default function AdminHistory() {
   const { user } = useAuth();
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
 
-  // Redirect if not admin
-  if (user?.role !== "admin") {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="neon-card text-center">
-          <p className="text-secondary text-lg mb-4">&gt; ACCESS DENIED</p>
-          <Link href="/">
-            <Button className="neon-button">RETURN HOME</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
+  // Hooks MUST be called before any early returns
   const { data: vehicles } = trpc.vehicles.list.useQuery({});
   const { data: history, isLoading } = trpc.vehicleHistory.getByVehicleId.useQuery(
     { vehicleId: selectedVehicleId || 0 },
     { enabled: selectedVehicleId !== null }
   );
+
+  // Redirect if not admin
+  if (user?.role !== "admin") {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="neon-card text-center">
+          <p className="text-primary text-lg mb-4">&gt; ACESSO NEGADO</p>
+          <Link href="/">
+            <Button className="neon-button">VOLTAR PARA INÍCIO</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const getActionColor = (action: string) => {
     switch (action) {
@@ -57,12 +58,12 @@ export default function AdminHistory() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b-2 border-secondary py-6 px-4">
+      <header className="border-b-2 border-primary py-6 px-4">
         <div className="container">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold neon-glow">CHANGE HISTORY</h1>
+            <h1 className="text-3xl font-bold neon-glow">HISTÓRICO DE ALTERAÇÕES</h1>
             <Link href="/admin">
-              <Button className="neon-button">← BACK TO ADMIN</Button>
+              <Button className="neon-button">← VOLTAR PARA ADMIN</Button>
             </Link>
           </div>
         </div>
@@ -74,7 +75,7 @@ export default function AdminHistory() {
             {/* Vehicle Selector */}
             <div className="lg:col-span-1">
               <Card className="neon-card sticky top-4">
-                <h2 className="text-lg font-bold text-secondary mb-4">&gt; SELECT VEHICLE</h2>
+                <h2 className="text-lg font-bold text-primary mb-4">&gt; SELECIONAR VEÍCULO</h2>
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {vehicles && vehicles.length > 0 ? (
                     vehicles.map((vehicle) => (
@@ -94,7 +95,7 @@ export default function AdminHistory() {
                       </button>
                     ))
                   ) : (
-                    <p className="text-muted-foreground text-sm">&gt; NO VEHICLES</p>
+                    <p className="text-muted-foreground text-sm">&gt; NENHUM VEÍCULO</p>
                   )}
                 </div>
               </Card>
@@ -104,11 +105,11 @@ export default function AdminHistory() {
             <div className="lg:col-span-3">
               {selectedVehicleId === null ? (
                 <Card className="neon-card text-center py-12">
-                  <p className="text-secondary text-lg">&gt; SELECT A VEHICLE TO VIEW HISTORY</p>
+                  <p className="text-muted-foreground text-lg">&gt; SELECIONE UM VEÍCULO PARA VER O HISTÓRICO</p>
                 </Card>
               ) : isLoading ? (
                 <Card className="neon-card text-center py-12">
-                  <p className="text-secondary animate-pulse">&gt; LOADING HISTORY...</p>
+                  <p className="text-muted-foreground animate-pulse">&gt; CARREGANDO HISTÓRICO...</p>
                 </Card>
               ) : history && history.length > 0 ? (
                 <div className="space-y-4">
@@ -138,7 +139,7 @@ export default function AdminHistory() {
 
                           {entry.changes ? (
                             <div className="bg-muted p-2 rounded text-xs text-foreground mb-2 max-h-24 overflow-y-auto">
-                              <p className="text-secondary mb-1">&gt; CHANGES:</p>
+                              <p className="text-primary mb-1">&gt; ALTERAÇÕES:</p>
                               <pre className="font-mono text-xs whitespace-pre-wrap break-words">
                                 {typeof entry.changes === "string" ? entry.changes : JSON.stringify(entry.changes)}
                               </pre>
@@ -155,7 +156,7 @@ export default function AdminHistory() {
                 </div>
               ) : (
                 <Card className="neon-card text-center py-12">
-                  <p className="text-secondary text-lg">&gt; NO HISTORY FOUND</p>
+                  <p className="text-muted-foreground text-lg">&gt; NENHUM HISTÓRICO ENCONTRADO</p>
                 </Card>
               )}
             </div>

@@ -59,3 +59,13 @@
 - [x] Implementar botão WhatsApp flutuante
 - [x] Adicionar seção de "Sobre" com descrição da empresa
 - [x] Testes finais e responsividade
+
+## Redesign v2 - Layout Premium Exchange Motors (Grid 3 Colunas)
+- [x] Atualizar paleta de cores para navy/dark blue e cinza escuro
+- [x] Redesenhar homepage com grid 3 colunas
+- [x] Cards grandes com imagens em destaque
+- [x] Header limpo com logo, menu, telefone, busca
+- [x] Remover efeitos neon excessivos
+- [x] Design minimalista e premium
+- [x] Informações de carro: Marca, Modelo, Ano/Ano, KM, Preço
+- [x] Testes de responsividade
