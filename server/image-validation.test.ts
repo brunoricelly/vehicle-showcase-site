@@ -10,7 +10,7 @@ import {
 describe("Image Validation - Backend", () => {
   describe("validateImageBasics", () => {
     it("should reject files larger than max size", () => {
-      const largeBuffer = Buffer.alloc(6 * 1024 * 1024); // 6MB
+      const largeBuffer = Buffer.alloc(25 * 1024 * 1024); // 25MB (acima do limite de 20MB)
       const result = validateImageBasics(largeBuffer, "image/jpeg");
       expect(result.valid).toBe(false);
       expect(result.error).toContain("muito grande");
@@ -63,14 +63,14 @@ describe("Image Validation - Backend", () => {
 
   describe("validateImageDimensions - JPEG", () => {
     it("should validate valid JPEG dimensions", () => {
-      // Create a minimal valid JPEG header (SOI + SOF0 marker)
+      // Create a JPEG with 1024x768 dimensions (mínimo válido)
       const buffer = Buffer.from([
         0xff, 0xd8, // SOI marker
         0xff, 0xc0, // SOF0 marker
         0x00, 0x11, // Length
         0x08, // Precision
-        0x02, 0x58, // Height (600)
-        0x03, 0x20, // Width (800)
+        0x03, 0x00, // Height (768)
+        0x04, 0x00, // Width (1024)
         0x03, // Components
         0x01, 0x22, 0x00,
         0x02, 0x11, 0x01,
@@ -79,19 +79,19 @@ describe("Image Validation - Backend", () => {
 
       const result = validateImageDimensions(buffer, "image/jpeg");
       expect(result.valid).toBe(true);
-      expect(result.width).toBe(800);
-      expect(result.height).toBe(600);
+      expect(result.width).toBe(1024);
+      expect(result.height).toBe(768);
     });
 
     it("should reject JPEG with dimensions too small", () => {
-      // Create a JPEG with 200x150 dimensions (below minimum)
+      // Create a JPEG with 512x384 dimensions (below minimum 1024x768)
       const buffer = Buffer.from([
         0xff, 0xd8, // SOI marker
         0xff, 0xc0, // SOF0 marker
         0x00, 0x11, // Length
         0x08, // Precision
-        0x00, 0x96, // Height (150)
-        0x00, 0xc8, // Width (200)
+        0x01, 0x80, // Height (384)
+        0x02, 0x00, // Width (512)
         0x03, // Components
         0x01, 0x22, 0x00,
         0x02, 0x11, 0x01,
@@ -107,31 +107,31 @@ describe("Image Validation - Backend", () => {
   describe("validateImageDimensions - PNG", () => {
     it("should validate valid PNG dimensions", () => {
       // Create a minimal valid PNG header
-      // PNG signature + IHDR chunk with 800x600 dimensions
+      // PNG signature + IHDR chunk with 1024x768 dimensions (mínimo válido)
       const buffer = Buffer.from([
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, // PNG signature
         0x00, 0x00, 0x00, 0x0d, // IHDR length
         0x49, 0x48, 0x44, 0x52, // IHDR
-        0x00, 0x00, 0x03, 0x20, // Width (800)
-        0x00, 0x00, 0x02, 0x58, // Height (600)
+        0x00, 0x00, 0x04, 0x00, // Width (1024)
+        0x00, 0x00, 0x03, 0x00, // Height (768)
         0x08, 0x02, 0x00, 0x00, 0x00, // Bit depth, color type, etc.
         0x00, 0x00, 0x00, 0x00, // CRC
       ]);
 
       const result = validateImageDimensions(buffer, "image/png");
       expect(result.valid).toBe(true);
-      expect(result.width).toBe(800);
-      expect(result.height).toBe(600);
+      expect(result.width).toBe(1024);
+      expect(result.height).toBe(768);
     });
 
     it("should reject PNG with dimensions too large", () => {
-      // Create a PNG with 5000x4000 dimensions (above maximum)
+      // Create a PNG with 10000x8000 dimensions (above maximum 8000x6000)
       const buffer = Buffer.from([
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, // PNG signature
         0x00, 0x00, 0x00, 0x0d, // IHDR length
         0x49, 0x48, 0x44, 0x52, // IHDR
-        0x00, 0x00, 0x13, 0x88, // Width (5000)
-        0x00, 0x00, 0x0f, 0xa0, // Height (4000)
+        0x00, 0x00, 0x27, 0x10, // Width (10000)
+        0x00, 0x00, 0x1f, 0x40, // Height (8000)
         0x08, 0x02, 0x00, 0x00, 0x00, // Bit depth, color type, etc.
         0x00, 0x00, 0x00, 0x00, // CRC
       ]);
@@ -157,24 +157,23 @@ describe("Image Validation - Backend", () => {
 
       const result = validateImageDimensions(buffer, "image/png");
 
-      expect(result.valid).toBe(true);
+      expect(result.valid).toBe(false); // 800x600 está abaixo do mínimo de 1024x768
       expect(result.width).toBe(800);
       expect(result.height).toBe(600);
-      expect(result.format).toBe("image/png");
-      expect(result.fileSizeBytes).toBe(buffer.length);
+      expect(result.error).toContain("mínima");
 
-      console.log(`✅ Image validation passed: ${result.width}x${result.height}px, ${formatFileSize(result.fileSizeBytes || 0)}`);
+      console.log(`✅ Image validation rejected (too small): ${result.width}x${result.height}px`);
     });
 
     it("should provide helpful error messages for invalid images", () => {
       // Test with file too large
-      const largeBuffer = Buffer.alloc(6 * 1024 * 1024);
+      const largeBuffer = Buffer.alloc(25 * 1024 * 1024);
       const result = validateImageBasics(largeBuffer, "image/jpeg");
 
       expect(result.valid).toBe(false);
       expect(result.error).toBeDefined();
-      expect(result.error).toContain("5.0MB");
-      expect(result.error).toContain("6.0MB");
+      expect(result.error).toContain("20.0MB");
+      expect(result.error).toContain("25.0MB");
 
       console.log(`✅ Error message helpful: "${result.error}"`);
     });

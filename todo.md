@@ -185,3 +185,16 @@
 - [x] Adicionar fallback para dimensions quando não conseguir ler
 - [x] Criar 10 testes de upload real
 - [x] 95 testes totais passando
+
+
+## Aumento de Dimensoes de Imagens para Padrao Moderno
+
+- [x] Aumentar dimensao minima de 400x300 para 1024x768 (resolucao HD)
+- [x] Aumentar dimensao maxima de 4000x3000 para 8000x6000 (4K e alem)
+- [x] Aumentar limite de tamanho de arquivo de 5MB para 20MB
+- [x] Atualizar testes com novas dimensoes
+- [x] Atualizar mensagens de validacao
+- [x] Testar com imagens de alta qualidade
+- [x] 95 testes passando com novas configuracoes
+- [x] Suporte a resolucao 4K (8000x6000)
+- [x] Suporte a imagens de alta qualidade ate 20MB

@@ -4,13 +4,13 @@ import { validateImageDimensions, formatFileSize } from "./imageValidation";
 describe("Image Upload - Real World Scenarios", () => {
   describe("Upload with valid images", () => {
     it("should handle PNG image with valid dimensions", () => {
-      // Create a valid PNG buffer (800x600)
+      // Create a valid PNG buffer (1024x768 - mínimo válido)
       const buffer = Buffer.from([
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, // PNG signature
         0x00, 0x00, 0x00, 0x0d, // IHDR length
         0x49, 0x48, 0x44, 0x52, // IHDR
-        0x00, 0x00, 0x03, 0x20, // Width (800)
-        0x00, 0x00, 0x02, 0x58, // Height (600)
+        0x00, 0x00, 0x04, 0x00, // Width (1024)
+        0x00, 0x00, 0x03, 0x00, // Height (768)
         0x08, 0x02, 0x00, 0x00, 0x00, // Bit depth, color type, etc.
         0x00, 0x00, 0x00, 0x00, // CRC
       ]);
@@ -18,8 +18,8 @@ describe("Image Upload - Real World Scenarios", () => {
       const result = validateImageDimensions(buffer, "image/png");
 
       expect(result.valid).toBe(true);
-      expect(result.width).toBe(800);
-      expect(result.height).toBe(600);
+      expect(result.width).toBe(1024);
+      expect(result.height).toBe(768);
       expect(result.fileSizeBytes).toBe(buffer.length);
 
       // Simulate backend response
@@ -34,22 +34,22 @@ describe("Image Upload - Real World Scenarios", () => {
         fileSize: formatFileSize(result.fileSizeBytes || 0),
       };
 
-      expect(response.dimensions.width).toBe(800);
-      expect(response.dimensions.height).toBe(600);
+      expect(response.dimensions.width).toBe(1024);
+      expect(response.dimensions.height).toBe(768);
       expect(response.fileSize).toBeDefined();
 
       console.log(`✅ Upload successful: ${response.dimensions.width}x${response.dimensions.height}px (${response.fileSize})`);
     });
 
     it("should handle JPEG image with valid dimensions", () => {
-      // Create a valid JPEG buffer (1024x768)
+      // Create a valid JPEG buffer (2048x1536 - resolução 2K)
       const buffer = Buffer.from([
         0xff, 0xd8, // SOI marker
         0xff, 0xc0, // SOF0 marker
         0x00, 0x11, // Length
         0x08, // Precision
-        0x03, 0x00, // Height (768)
-        0x04, 0x00, // Width (1024)
+        0x06, 0x00, // Height (1536)
+        0x08, 0x00, // Width (2048)
         0x03, // Components
         0x01, 0x22, 0x00,
         0x02, 0x11, 0x01,
@@ -59,8 +59,8 @@ describe("Image Upload - Real World Scenarios", () => {
       const result = validateImageDimensions(buffer, "image/jpeg");
 
       expect(result.valid).toBe(true);
-      expect(result.width).toBe(1024);
-      expect(result.height).toBe(768);
+      expect(result.width).toBe(2048);
+      expect(result.height).toBe(1536);
 
       // Simulate backend response
       const response = {
@@ -74,20 +74,20 @@ describe("Image Upload - Real World Scenarios", () => {
         fileSize: formatFileSize(result.fileSizeBytes || 0),
       };
 
-      expect(response.dimensions.width).toBe(1024);
-      expect(response.dimensions.height).toBe(768);
+      expect(response.dimensions.width).toBe(2048);
+      expect(response.dimensions.height).toBe(1536);
 
       console.log(`✅ Upload successful: ${response.dimensions.width}x${response.dimensions.height}px (${response.fileSize})`);
     });
 
     it("should handle image with dimensions at minimum boundary", () => {
-      // Create PNG with minimum dimensions (400x300)
+      // Create PNG with minimum dimensions (1024x768)
       const buffer = Buffer.from([
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
         0x00, 0x00, 0x00, 0x0d,
         0x49, 0x48, 0x44, 0x52,
-        0x00, 0x00, 0x01, 0x90, // Width (400)
-        0x00, 0x00, 0x01, 0x2c, // Height (300)
+        0x00, 0x00, 0x04, 0x00, // Width (1024)
+        0x00, 0x00, 0x03, 0x00, // Height (768)
         0x08, 0x02, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
       ]);
@@ -95,20 +95,20 @@ describe("Image Upload - Real World Scenarios", () => {
       const result = validateImageDimensions(buffer, "image/png");
 
       expect(result.valid).toBe(true);
-      expect(result.width).toBe(400);
-      expect(result.height).toBe(300);
+      expect(result.width).toBe(1024);
+      expect(result.height).toBe(768);
 
       console.log(`✅ Minimum dimensions accepted: ${result.width}x${result.height}px`);
     });
 
     it("should handle image with dimensions at maximum boundary", () => {
-      // Create PNG with maximum dimensions (4000x3000)
+      // Create PNG with maximum dimensions (8000x6000)
       const buffer = Buffer.from([
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
         0x00, 0x00, 0x00, 0x0d,
         0x49, 0x48, 0x44, 0x52,
-        0x00, 0x00, 0x0f, 0xa0, // Width (4000)
-        0x00, 0x00, 0x0b, 0xb8, // Height (3000)
+        0x00, 0x00, 0x1f, 0x40, // Width (8000)
+        0x00, 0x00, 0x17, 0x70, // Height (6000)
         0x08, 0x02, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
       ]);
@@ -116,8 +116,8 @@ describe("Image Upload - Real World Scenarios", () => {
       const result = validateImageDimensions(buffer, "image/png");
 
       expect(result.valid).toBe(true);
-      expect(result.width).toBe(4000);
-      expect(result.height).toBe(3000);
+      expect(result.width).toBe(8000);
+      expect(result.height).toBe(6000);
 
       console.log(`✅ Maximum dimensions accepted: ${result.width}x${result.height}px`);
     });
@@ -125,13 +125,13 @@ describe("Image Upload - Real World Scenarios", () => {
 
   describe("Upload with invalid images", () => {
     it("should reject image too small", () => {
-      // Create PNG with 200x150 (below minimum)
+      // Create PNG with 512x384 (below minimum 1024x768)
       const buffer = Buffer.from([
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
         0x00, 0x00, 0x00, 0x0d,
         0x49, 0x48, 0x44, 0x52,
-        0x00, 0x00, 0x00, 0xc8, // Width (200)
-        0x00, 0x00, 0x00, 0x96, // Height (150)
+        0x00, 0x00, 0x02, 0x00, // Width (512)
+        0x00, 0x00, 0x01, 0x80, // Height (384)
         0x08, 0x02, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
       ]);
@@ -145,13 +145,13 @@ describe("Image Upload - Real World Scenarios", () => {
     });
 
     it("should reject image too large", () => {
-      // Create PNG with 5000x4000 (above maximum)
+      // Create PNG with 10000x8000 (above maximum 8000x6000)
       const buffer = Buffer.from([
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
         0x00, 0x00, 0x00, 0x0d,
         0x49, 0x48, 0x44, 0x52,
-        0x00, 0x00, 0x13, 0x88, // Width (5000)
-        0x00, 0x00, 0x0f, 0xa0, // Height (4000)
+        0x00, 0x00, 0x27, 0x10, // Width (10000)
+        0x00, 0x00, 0x1f, 0x40, // Height (8000)
         0x08, 0x02, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
       ]);
@@ -164,9 +164,9 @@ describe("Image Upload - Real World Scenarios", () => {
       console.log(`✅ Large image rejected: ${result.error}`);
     });
 
-    it("should reject file too large (>5MB)", () => {
-      // Create a 6MB buffer
-      const buffer = Buffer.alloc(6 * 1024 * 1024);
+    it("should reject file too large (>20MB)", () => {
+      // Create a 25MB buffer
+      const buffer = Buffer.alloc(25 * 1024 * 1024);
 
       const result = validateImageDimensions(buffer, "image/jpeg");
 
