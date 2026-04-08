@@ -147,11 +147,25 @@ export async function getVehicles(filters?: {
 
   const query = db.select().from(vehicles);
 
+  let result;
   if (conditions.length > 0) {
-    return await query.where(and(...conditions)).orderBy(desc(vehicles.createdAt));
+    result = await query.where(and(...conditions)).orderBy(desc(vehicles.createdAt));
+  } else {
+    result = await query.orderBy(desc(vehicles.createdAt));
   }
 
-  return await query.orderBy(desc(vehicles.createdAt));
+  // Fetch images for each vehicle
+  const vehiclesWithImages = await Promise.all(
+    result.map(async (vehicle) => {
+      const images = await db.select().from(vehicleImages).where(eq(vehicleImages.vehicleId, vehicle.id));
+      return {
+        ...vehicle,
+        images,
+      };
+    })
+  );
+
+  return vehiclesWithImages;
 }
 
 export async function getVehicleById(id: number) {
@@ -159,7 +173,15 @@ export async function getVehicleById(id: number) {
   if (!db) return null;
 
   const result = await db.select().from(vehicles).where(eq(vehicles.id, id)).limit(1);
-  return result.length > 0 ? result[0] : null;
+  if (result.length === 0) return null;
+
+  const vehicle = result[0];
+  const images = await db.select().from(vehicleImages).where(eq(vehicleImages.vehicleId, vehicle.id));
+
+  return {
+    ...vehicle,
+    images,
+  };
 }
 
 export async function createVehicle(data: {

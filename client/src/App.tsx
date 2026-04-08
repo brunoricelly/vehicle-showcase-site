@@ -5,7 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
-import VehicleDetail from "./pages/VehicleDetail";
+import VehicleDetailNew from "./pages/VehicleDetailNew";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminVehicleForm from "./pages/AdminVehicleForm";
 import AdminHistory from "./pages/AdminHistory";
@@ -16,7 +16,7 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
-      <Route path={"/vehicle/:id"} component={VehicleDetail} />
+      <Route path={"/vehicle/:id"} component={VehicleDetailNew} />
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/admin/vehicle/:id"} component={AdminVehicleForm} />
       <Route path={"/admin/vehicle/:id/images"} component={AdminVehicleImages} />

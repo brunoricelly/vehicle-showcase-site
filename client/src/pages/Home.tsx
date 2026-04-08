@@ -274,15 +274,27 @@ export default function Home() {
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.4 }}
-                      className="w-full h-72 md:h-80 bg-muted overflow-hidden flex items-center justify-center text-muted-foreground relative"
+                      className="w-full h-72 md:h-80 bg-muted overflow-hidden flex items-center justify-center text-muted-foreground relative group"
                     >
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        &gt; IMAGEM DO VEÍCULO
-                      </motion.div>
+                      {vehicle.images && vehicle.images.length > 0 && vehicle.images[0]?.imageUrl ? (
+                        <motion.img
+                          src={vehicle.images[0].imageUrl}
+                          alt={`${vehicle.brand} ${vehicle.model}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.5 }}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          &gt; IMAGEM DO VEÍCULO
+                        </motion.div>
+                      )}
                     </motion.div>
 
                     {/* Conteúdo */}

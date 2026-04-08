@@ -80,3 +80,13 @@
 - [x] Estrutura otimizada para imagens lifestyle de alta resolução
 - [x] Hover effects elegantes nos cards
 - [x] Animações de entrada ao carregar página
+
+## Sugestões de Acompanhamento - Implementação
+- [x] Integrar imagens reais do banco de dados/S3 nos cards
+- [x] Adicionar loading states e fallbacks para imagens
+- [x] Desenvolver página de detalhes do veículo
+- [x] Galeria interativa com lightbox
+- [x] Especificações técnicas na página de detalhes
+- [x] Histórico de preço
+- [x] Animações parallax ao scroll
+- [x] Testes finais e checkpoint
