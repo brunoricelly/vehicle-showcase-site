@@ -27,11 +27,14 @@ export default function AdminVehicleImages() {
     { enabled: vehicleId > 0 }
   );
 
+  const utils = trpc.useUtils();
   const uploadMutation = trpc.vehicleImages.upload.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       setSelectedFiles([]);
       setPreviews([]);
       toast.success("Images uploaded successfully!");
+      // Invalidate cache to refresh images
+      await utils.vehicleImages.getByVehicleId.invalidate({ vehicleId });
     },
     onError: (error) => {
       toast.error(`Upload failed: ${error.message}`);
@@ -39,8 +42,10 @@ export default function AdminVehicleImages() {
   });
 
   const deleteMutation = trpc.vehicleImages.delete.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Image deleted successfully!");
+      // Invalidate cache to refresh images
+      await utils.vehicleImages.getByVehicleId.invalidate({ vehicleId });
     },
     onError: (error) => {
       toast.error(`Delete failed: ${error.message}`);

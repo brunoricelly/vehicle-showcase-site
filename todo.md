@@ -79,3 +79,21 @@
 - [x] Corrigido addWebhookLog() para acessar result[0].insertId
 - [x] Todos os 45 testes passando
 - [x] Veículos agora são criados/editados corretamente
+
+
+## BUG - Upload de Imagens de Veículos Não Funciona
+
+### Problema Identificado
+- [x] Imagens enviadas no painel administrativo não apareciam no anúncio do veículo
+- [x] Frontend não estava invalidando cache após upload
+- [x] Imagens estão sendo salvas corretamente no banco de dados PostgreSQL
+- [x] Imagens estão sendo salvas no S3 via storagePut()
+
+### Solução Implementada
+- [x] Adicionado invalidate de cache no AdminVehicleImages após upload
+- [x] Adicionado invalidate de cache no AdminVehicleImages após delete
+- [x] Criados 6 testes de integração para upload de imagens
+- [x] Verificado que imagens aparecem em tempo real após upload
+- [x] Verificado que múltiplas imagens são suportadas
+- [x] Verificado que main image é corretamente identificado
+- [x] 56 testes totais passando
