@@ -223,9 +223,9 @@
 - [x] Incluir instrucoes para Nginx + SSL
 
 ### Fase 4: Repositório GitHub
-- [x] Verificar .gitignore (padrão do template está correto)
-- [x] Fazer commit de todas as mudanças (pronto via git)
-- [x] Preparar para push (repositório sincronizado)
+- [x] Verificar .gitignore (padrão do template está correto - ignora .env, node_modules, build, logs)
+- [x] Fazer commit de todas as mudanças (commit 287b316 feito com sucesso)
+- [x] Preparar para push (push para GitHub concluído em user_github/main)
 
 ### Fase 5: Guia de Deploy
 - [x] Instrucoes para deploy em VPS (DEPLOY.md)
