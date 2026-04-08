@@ -206,3 +206,20 @@
 - [x] Atualizar ComparisonPage.tsx para usar configurações dinâmicas
 - [x] Testar sincronização em tempo real
 - [x] Criar testes de integração para sincronização (5 testes passando)
+
+## Melhorias no Painel Administrativo - WhatsApp e Logo
+
+### WhatsApp
+- [x] Adicionar campo para editar número do WhatsApp
+- [x] Validar formato do número (apenas dígitos)
+- [x] Garantir que wa.me funcione corretamente com o número
+- [x] Atualizar todos os botões WhatsApp do site com o novo número
+
+### Logo
+- [x] Adicionar campo de upload de logo
+- [x] Validar tamanho máximo (2MB)
+- [x] Validar formato (PNG, JPG, SVG)
+- [x] Exibir descrição com especificações
+- [x] Integrar logo no header do site
+- [x] Sincronizar logo entre admin e site
+- [x] Criar endpoint /api/upload para receber arquivos

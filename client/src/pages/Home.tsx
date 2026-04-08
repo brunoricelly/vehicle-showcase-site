@@ -113,13 +113,24 @@ export default function Home() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="flex items-center gap-2 cursor-pointer"
+              onClick={() => setLocation("/")}
             >
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-                exchange
-              </h1>
-              <span className="text-xs text-muted-foreground font-light tracking-widest">
-                motors
-              </span>
+              {storeSettings.logoUrl ? (
+                <img 
+                  src={storeSettings.logoUrl} 
+                  alt="Logo" 
+                  className="h-10 md:h-12 object-contain"
+                />
+              ) : (
+                <>
+                  <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+                    exchange
+                  </h1>
+                  <span className="text-xs text-muted-foreground font-light tracking-widest">
+                    motors
+                  </span>
+                </>
+              )}
             </motion.div>
 
             {/* Desktop Menu */}

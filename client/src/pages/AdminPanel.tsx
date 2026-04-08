@@ -28,6 +28,10 @@ export default function AdminPanel() {
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
   const [businessHours, setBusinessHours] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
 
   // Queries
   const { data: storeSettings } = trpc.store.settings.useQuery();
@@ -69,6 +73,11 @@ export default function AdminPanel() {
       setEmail(storeSettings.email || "");
       setWebsite(storeSettings.website || "");
       setBusinessHours(storeSettings.businessHours || "");
+      setWhatsappNumber(storeSettings.phone || "");
+      setLogoUrl(storeSettings.logoUrl || "");
+      if (storeSettings.logoUrl) {
+        setLogoPreview(storeSettings.logoUrl);
+      }
     }
   }, [storeSettings]);
 
@@ -106,15 +115,60 @@ export default function AdminPanel() {
         city,
         state,
         zipCode,
-        phone,
+        phone: whatsappNumber || phone,
         email,
         website,
         businessHours,
+        logoUrl,
       },
       {
         onSettled: () => setLoading(false),
       }
     );
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Arquivo muito grande. Máximo 2MB.");
+      return;
+    }
+
+    const validFormats = ["image/png", "image/jpeg", "image/svg+xml"];
+    if (!validFormats.includes(file.type)) {
+      toast.error("Formato inválido. Use PNG, JPG ou SVG.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setLogoPreview(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setLogoUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Upload falhou");
+      
+      const data = await response.json();
+      setLogoUrl(data.url);
+      toast.success("Logo enviada com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao enviar logo");
+      setLogoPreview(null);
+    } finally {
+      setLogoUploading(false);
+    }
   };
 
   return (
@@ -317,6 +371,46 @@ export default function AdminPanel() {
                     rows={4}
                     className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   />
+                </div>
+
+                {/* WhatsApp Number */}
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                    Número WhatsApp
+                  </label>
+                  <Input
+                    value={whatsappNumber}
+                    onChange={(e) => setWhatsappNumber(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Ex: 5511999999999"
+                    className="bg-muted border-border"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Apenas números, com código do país (55 para Brasil)</p>
+                </div>
+
+                {/* Logo Upload */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                    Logo da Loja
+                  </label>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <Input
+                        type="file"
+                        accept="image/png,image/jpeg,image/svg+xml"
+                        onChange={handleLogoUpload}
+                        disabled={logoUploading}
+                        className="bg-muted border-border"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        📋 Formatos: PNG, JPG ou SVG | 📦 Tamanho máximo: 2MB | 📐 Recomendado: 200x60px
+                      </p>
+                    </div>
+                    {logoPreview && (
+                      <div className="w-32 h-20 bg-muted rounded-lg flex items-center justify-center border border-border">
+                        <img src={logoPreview} alt="Logo preview" className="max-w-full max-h-full object-contain" />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

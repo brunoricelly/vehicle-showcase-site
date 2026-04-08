@@ -35,6 +35,30 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  
+  // File upload endpoint
+  app.post("/api/upload", express.raw({ type: "*/*", limit: "2mb" }), async (req, res) => {
+    try {
+      const file = req.body;
+      const contentType = req.headers["content-type"] || "application/octet-stream";
+      
+      if (!file || file.length === 0) {
+        return res.status(400).json({ error: "No file provided" });
+      }
+
+      if (file.length > 2 * 1024 * 1024) {
+        return res.status(400).json({ error: "File too large" });
+      }
+
+      const base64 = file.toString("base64");
+      const dataUrl = `data:${contentType};base64,${base64}`;
+      
+      res.json({ url: dataUrl });
+    } catch (error) {
+      console.error("Upload error:", error);
+      res.status(500).json({ error: "Upload failed" });
+    }
+  });
   // tRPC API
   app.use(
     "/api/trpc",
