@@ -9,6 +9,10 @@ import { Trash2, Edit2, Plus } from "lucide-react";
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<"vehicles" | "history" | "webhooks">("vehicles");
+  const { data: vehicles, isLoading, refetch } = trpc.vehicles.list.useQuery({});
+  const deleteVehicleMutation = trpc.vehicles.delete.useMutation({
+    onSuccess: () => refetch(),
+  });
 
   // Redirect if not admin
   if (user?.role !== "admin") {
@@ -16,7 +20,7 @@ export default function AdminDashboard() {
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="neon-card text-center">
           <p className="text-primary text-lg mb-4">&gt; ACESSO NEGADO</p>
-          <p className="text-muted-foreground mb-6">PRIVILÉGIOS DE ADMINISTRADOR NECESSÁRIOS</p>
+          <p className="text-muted-foreground mb-6">PRIVÍLÉGIOS DE ADMINISTRADOR NECESSÁRIOS</p>
           <Link href="/">
             <Button className="neon-button">VOLTAR PARA INÍCIO</Button>
           </Link>
@@ -24,11 +28,6 @@ export default function AdminDashboard() {
       </div>
     );
   }
-
-  const { data: vehicles, isLoading, refetch } = trpc.vehicles.list.useQuery({});
-  const deleteVehicleMutation = trpc.vehicles.delete.useMutation({
-    onSuccess: () => refetch(),
-  });
 
   const handleDelete = (id: number) => {
     if (confirm("Tem certeza que deseja deletar este veículo?")) {
