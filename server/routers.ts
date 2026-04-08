@@ -32,6 +32,7 @@ import {
 } from "./db";
 import { storagePut } from "./storage";
 import { TRPCError } from "@trpc/server";
+import { validateImageDimensions, formatFileSize } from "./imageValidation";
 
 // Utility to check if user is admin
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -262,6 +263,7 @@ export const appRouter = router({
           vehicleId: z.number(),
           imageData: z.string(), // base64 encoded image
           fileName: z.string(),
+          mimeType: z.string().default("image/jpeg"),
           isMainImage: z.boolean().optional(),
         })
       )
@@ -274,13 +276,27 @@ export const appRouter = router({
         // Convert base64 to buffer
         const buffer = Buffer.from(input.imageData, "base64");
 
+        // Validate image dimensions and file size
+        const validation = validateImageDimensions(buffer, input.mimeType);
+        if (!validation.valid) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: validation.error || "Imagem inválida",
+          });
+        }
+
+        // Log validation result for debugging
+        console.log(
+          `✅ Image validated: ${validation.width}x${validation.height}px, ${formatFileSize(validation.fileSizeBytes || 0)}`
+        );
+
         // Generate unique key
         const timestamp = Date.now();
         const randomSuffix = Math.random().toString(36).substring(2, 8);
         const fileKey = `vehicles/${input.vehicleId}/${timestamp}-${randomSuffix}-${input.fileName}`;
 
         // Upload to S3
-        const { url } = await storagePut(fileKey, buffer, "image/jpeg");
+        const { url } = await storagePut(fileKey, buffer, input.mimeType);
 
         // Get current images
         const currentImages = await getVehicleImages(input.vehicleId);
@@ -298,6 +314,11 @@ export const appRouter = router({
           id: result.insertId,
           imageUrl: url,
           imageKey: fileKey,
+          dimensions: {
+            width: validation.width,
+            height: validation.height,
+          },
+          fileSize: formatFileSize(validation.fileSizeBytes || 0),
         };
       }),
 

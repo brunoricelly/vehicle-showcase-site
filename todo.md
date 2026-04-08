@@ -129,3 +129,39 @@
 
 ### Status
 ✅ **COMPLETO** - Sistema de imagens 100% funcional
+
+
+## Validação e Otimização de Imagens no Upload
+
+### Backend
+- [x] Criar utilitário de validação de imagens (validação de dimensões, tamanho, formato)
+- [x] Validar dimensões mínimas (400x300px)
+- [x] Validar dimensões máximas (4000x3000px)
+- [x] Validar tamanho máximo do arquivo (5MB)
+- [x] Validar formatos suportados (JPEG, PNG, WebP)
+- [x] Integrar validação na procedure vehicleImages.upload
+- [x] Implementar calculateCompressionQuality para otimização
+- [x] Implementar formatFileSize para exibição de tamanho
+
+### Frontend
+- [x] Criar utilitário de validação no cliente (imageValidation.ts)
+- [x] Adicionar validação no AdminVehicleImages antes de enviar
+- [x] Mostrar preview com informações de dimensões
+- [x] Exibir mensagens de erro claras para validações falhadas
+- [x] Mostrar informações de validação (dimensões, tamanho)
+- [x] Desabilitar botão de upload durante processamento
+- [x] Mostrar ícones de sucesso/erro nas validações
+
+### Testes
+- [x] Teste de validação de dimensões mínimas
+- [x] Teste de validação de dimensões máximas
+- [x] Teste de validação de tamanho de arquivo
+- [x] Teste de validação de formato
+- [x] Teste de calculateCompressionQuality
+- [x] Teste de rejeição de imagens inválidas
+- [x] Teste de formatFileSize
+- [x] 14 testes de validação passando
+
+### Status
+- [x] **COMPLETO** - Validação e otimização de imagens 100% funcional
+- 85 testes totais passando
