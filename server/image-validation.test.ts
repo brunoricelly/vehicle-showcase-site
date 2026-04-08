@@ -34,14 +34,14 @@ describe("Image Validation - Backend", () => {
 
   describe("formatFileSize", () => {
     it("should format bytes correctly", () => {
-      expect(formatFileSize(0)).toBe("0 Bytes");
+      expect(formatFileSize(0)).toBe("0 B");
       expect(formatFileSize(1024)).toBe("1 KB");
       expect(formatFileSize(1024 * 1024)).toBe("1 MB");
       expect(formatFileSize(1024 * 1024 * 1024)).toBe("1 GB");
     });
 
     it("should handle fractional sizes", () => {
-      expect(formatFileSize(512)).toBe("512 Bytes");
+      expect(formatFileSize(512)).toBe("512 B");
       expect(formatFileSize(1536 * 1024)).toBe("1.5 MB");
     });
   });
@@ -54,10 +54,10 @@ describe("Image Validation - Backend", () => {
     });
 
     it("should return appropriate quality levels", () => {
-      expect(calculateCompressionQuality(4000, 3000)).toBe(0.7); // 12MP
-      expect(calculateCompressionQuality(2500, 2000)).toBe(0.8); // 5MP
-      expect(calculateCompressionQuality(1600, 1200)).toBe(0.85); // 1.92MP
-      expect(calculateCompressionQuality(800, 600)).toBe(0.85); // 0.48MP
+      expect(calculateCompressionQuality(4000, 3000)).toBe(78); // 12MP (6-12MP range)
+      expect(calculateCompressionQuality(2500, 2000)).toBe(85); // 5MP (< 6MP)
+      expect(calculateCompressionQuality(1600, 1200)).toBe(85); // 1.92MP (< 6MP)
+      expect(calculateCompressionQuality(800, 600)).toBe(85); // 0.48MP (< 6MP)
     });
   });
 

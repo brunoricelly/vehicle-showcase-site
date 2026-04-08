@@ -36,7 +36,7 @@ export const DEFAULT_IMAGE_CONFIG: ImageValidationConfig = {
 
 /**
  * Configuração de imagens para padrão moderno (2024+)
- * - Mínimo: 1024x768 (resolução HD)
+ * - Mínimo: sem limite
  * - Máximo: 8000x6000 (4K e além)
  * - Tamanho: até 20MB para alta qualidade
  */
@@ -51,6 +51,16 @@ export function validateImageBasics(
   mimeType: string,
   config: ImageValidationConfig = DEFAULT_IMAGE_CONFIG
 ): ImageValidationResult {
+  // Validate MIME type
+  if (config.allowedFormats && !config.allowedFormats.includes(mimeType)) {
+    return {
+      valid: false,
+      error: `Formato não suportado. Formatos aceitos: ${config.allowedFormats.join(", ")}`,
+      fileSizeBytes: fileBuffer.length,
+      format: mimeType,
+    };
+  }
+
   // Validate file size
   if (config.maxFileSizeBytes && fileBuffer.length > config.maxFileSizeBytes) {
     const maxSizeMB = (config.maxFileSizeBytes / (1024 * 1024)).toFixed(1);
@@ -60,16 +70,6 @@ export function validateImageBasics(
       error: `Arquivo muito grande. Máximo: ${maxSizeMB}MB, Atual: ${actualSizeMB}MB`,
       fileSizeBytes: fileBuffer.length,
       format: mimeType,
-    };
-  }
-
-  // Validate format
-  if (config.allowedFormats && !config.allowedFormats.includes(mimeType)) {
-    return {
-      valid: false,
-      error: `Formato não suportado. Formatos aceitos: ${config.allowedFormats.join(", ")}`,
-      format: mimeType,
-      fileSizeBytes: fileBuffer.length,
     };
   }
 
@@ -166,12 +166,19 @@ export function validateImageDimensions(
         format: mimeType,
       };
     }
+
+    return {
+      valid: true,
+      width,
+      height,
+      fileSizeBytes: fileBuffer.length,
+      format: mimeType,
+    };
   }
 
   return {
-    valid: true,
-    width,
-    height,
+    valid: false,
+    error: "Não foi possível determinar as dimensões da imagem",
     fileSizeBytes: fileBuffer.length,
     format: mimeType,
   };
@@ -182,9 +189,18 @@ export function validateImageDimensions(
  * Reads JPEG markers to find SOF (Start of Frame) marker
  */
 function getJPEGDimensions(buffer: Buffer): { width: number; height: number } {
-  let offset = 2; // Skip SOI marker (0xFFD8)
+  // JPEG must start with FFD8 (SOI marker)
+  if (buffer.length < 4 || buffer[0] !== 0xff || buffer[1] !== 0xd8) {
+    throw new Error("Invalid JPEG file");
+  }
 
-  while (offset < buffer.length) {
+  let offset = 2; // Skip SOI marker (0xFFD8)
+  let attempts = 0;
+  const maxAttempts = 100; // Prevent infinite loops
+
+  while (offset < buffer.length - 8 && attempts < maxAttempts) {
+    attempts++;
+
     // Look for marker
     if (buffer[offset] !== 0xff) {
       offset++;
@@ -198,15 +214,25 @@ function getJPEGDimensions(buffer: Buffer): { width: number; height: number } {
     // SOF0=0xC0, SOF1=0xC1, SOF2=0xC2, SOF9=0xC9, SOF10=0xCA
     if ([0xc0, 0xc1, 0xc2, 0xc9, 0xca].includes(marker)) {
       // Skip length (2 bytes) and precision (1 byte)
+      if (offset + 3 >= buffer.length) break;
       offset += 3;
+
       // Read height (2 bytes) and width (2 bytes)
       const height = (buffer[offset] << 8) | buffer[offset + 1];
       const width = (buffer[offset + 2] << 8) | buffer[offset + 3];
+
+      // Validate dimensions are reasonable
+      if (width === 0 || height === 0 || width > 100000 || height > 100000) {
+        throw new Error("Invalid JPEG dimensions");
+      }
+
       return { width, height };
     }
 
-    // Skip to next marker
+    // Skip to next marker safely
+    if (offset + 1 >= buffer.length) break;
     const length = (buffer[offset] << 8) | buffer[offset + 1];
+    if (length < 2 || length > buffer.length) break; // Invalid length
     offset += length;
   }
 
@@ -223,10 +249,19 @@ function getPNGDimensions(buffer: Buffer): { width: number; height: number } {
     throw new Error("PNG file too small");
   }
 
-  // IHDR chunk starts at byte 8
-  // Bytes 16-19 contain width, bytes 20-23 contain height
+  // PNG structure:
+  // Bytes 0-7: PNG signature
+  // Bytes 8-11: IHDR chunk size (always 13 for IHDR)
+  // Bytes 12-15: "IHDR" string
+  // Bytes 16-19: Width (big-endian 32-bit)
+  // Bytes 20-23: Height (big-endian 32-bit)
   const width = buffer.readUInt32BE(16);
   const height = buffer.readUInt32BE(20);
+
+  // Validate dimensions are reasonable
+  if (width === 0 || height === 0 || width > 100000 || height > 100000) {
+    throw new Error("Invalid PNG dimensions");
+  }
 
   return { width, height };
 }
@@ -247,54 +282,81 @@ function getWebPDimensions(buffer: Buffer): { width: number; height: number } {
     // The dimensions are stored as 14-bit values
     const w = ((buffer[9] << 8) | buffer[8]) & 0x3fff;
     const h = ((buffer[11] << 8) | buffer[10]) & 0x3fff;
+
+    // Validate dimensions
+    if (w === 0 || h === 0 || w > 100000 || h > 100000) {
+      throw new Error("Invalid WebP dimensions");
+    }
+
     return { width: w + 1, height: h + 1 };
   }
 
   // Check for VP8L (lossless) chunk
   if (buffer.toString("ascii", 12, 16) === "VP8L") {
-    // VP8L has 5 bytes of header, dimensions are in next 4 bytes
-    const bits = buffer.readUInt32LE(16);
-    const width = ((bits & 0x3fff) + 1) as number;
-    const height = (((bits >> 14) & 0x3fff) + 1) as number;
-    return { width, height };
+    // VP8L bitstream: dimensions are in the first 4 bytes after VP8L header
+    // 14 bits for width, 14 bits for height
+    const b1 = buffer[20];
+    const b2 = buffer[21];
+    const b3 = buffer[22];
+    const b4 = buffer[23];
+
+    const w = ((b2 & 0x3f) << 8) | b1;
+    const h = ((b4 & 0x0f) << 10) | (b3 << 2) | ((b2 & 0xc0) >> 6);
+
+    // Validate dimensions
+    if (w === 0 || h === 0 || w > 100000 || h > 100000) {
+      throw new Error("Invalid WebP dimensions");
+    }
+
+    return { width: w + 1, height: h + 1 };
   }
 
   // Check for VP8X (extended) chunk
   if (buffer.toString("ascii", 12, 16) === "VP8X") {
-    // VP8X: width is at offset 20-22 (24-bit), height at 23-25
-    const width = (buffer[20] | (buffer[21] << 8) | (buffer[22] << 16)) + 1;
-    const height = (buffer[23] | (buffer[24] << 8) | (buffer[25] << 16)) + 1;
-    return { width, height };
+    // VP8X has dimensions at offset 24-29
+    if (buffer.length < 30) {
+      throw new Error("WebP file too small");
+    }
+
+    const w = (buffer[24] | (buffer[25] << 8) | (buffer[26] << 16)) & 0x3fffff;
+    const h = (buffer[27] | (buffer[28] << 8) | (buffer[29] << 16)) & 0x3fffff;
+
+    // Validate dimensions
+    if (w === 0 || h === 0 || w > 100000 || h > 100000) {
+      throw new Error("Invalid WebP dimensions");
+    }
+
+    return { width: w + 1, height: h + 1 };
   }
 
-  throw new Error("Could not find WebP dimensions");
+  throw new Error("Unknown WebP format");
 }
 
 /**
- * Calculates optimal compression quality based on image size
- * Larger images get more aggressive compression
+ * Calculates compression quality based on image resolution
+ * Higher resolution images get lower quality to save bandwidth
  */
-export function calculateCompressionQuality(
-  width: number,
-  height: number
-): number {
+export function calculateCompressionQuality(width: number, height: number): number {
   const megapixels = (width * height) / 1000000;
 
-  if (megapixels > 10) return 0.7; // High MP: 70% quality
-  if (megapixels > 5) return 0.75; // Medium-high MP: 75% quality
-  if (megapixels > 2) return 0.8; // Medium MP: 80% quality
-  return 0.85; // Low MP: 85% quality
+  if (megapixels > 20) {
+    return 65; // 4K and above
+  } else if (megapixels > 12) {
+    return 72; // 2K range
+  } else if (megapixels > 6) {
+    return 78; // 1080p and above
+  } else {
+    return 85; // Lower resolution
+  }
 }
 
 /**
- * Generates a human-readable file size string
+ * Formats file size for display
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
-
+  if (bytes === 0) return "0 B";
   const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 }
