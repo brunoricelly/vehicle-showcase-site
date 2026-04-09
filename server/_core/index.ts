@@ -90,7 +90,7 @@ async function startServer() {
     serveStatic(app);
   }
 
-  const preferredPort = parseInt(process.env.PORT || "3000");
+  const preferredPort = parseInt(process.env.PORT || "3010");
   
   // Use the specified port strictly - do not try other ports
   server.listen(preferredPort, () => {
