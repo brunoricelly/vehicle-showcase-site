@@ -29,7 +29,7 @@ NODE_ENV=production
 
 **Build Command:**
 ```bash
-pnpm install && pnpm build
+./build.sh
 ```
 
 **Start Command:**
