@@ -29,18 +29,21 @@ let _client: pg.Pool | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
+  if (!_db) {
     try {
       console.log("[Database] Initializing PostgreSQL connection...");
-      // Add sslmode=disable to connection string
-      const dbUrl = new URL(process.env.DATABASE_URL);
-      dbUrl.searchParams.set('sslmode', 'disable');
+      
+      // Use PostgreSQL credentials directly (port 5372)
+      const connectionString = 'postgres://postgres:pKwGcya385XfMg4cDax0S1qzVxWiu05CAI5rRJxHbSHTPbqii5Tvrjcg34tRvpVn@5.78.67.95:5372/postgres?sslmode=disable';
+      
+      console.log("[Database] Connecting to PostgreSQL at 5.78.67.95:5372");
       
       _client = new pg.Pool({
-        connectionString: dbUrl.toString(),
+        connectionString,
         max: 10,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 10000,
+        ssl: false,
       });
       _db = drizzle(_client);
       

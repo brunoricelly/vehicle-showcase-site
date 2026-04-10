@@ -90,16 +90,17 @@ async function startServer() {
     serveStatic(app);
   }
 
-  const preferredPort = parseInt(process.env.PORT || "3010");
+  // FIXED PORT 3010 for Coolify deployment
+  const PORT = 3010;
   
-  // Use the specified port strictly - do not try other ports
-  server.listen(preferredPort, () => {
-    console.log(`Server running on http://localhost:${preferredPort}/`);
+  // Use port 3010 strictly
+  server.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}/`);
   });
   
   server.on("error", (error: any) => {
     if (error.code === "EADDRINUSE") {
-      console.error(`Port ${preferredPort} is already in use. Please free the port or change PORT environment variable.`);
+      console.error(`Port ${PORT} is already in use.`);
       process.exit(1);
     }
     throw error;
