@@ -1,6 +1,10 @@
-# Guia de Deploy no Coolify
+# Guia de Deploy no Coolify - Porta 3010
 
-## Configuração Necessária
+## ⚠️ IMPORTANTE: Porta 3010 (NÃO 3000)
+
+Este projeto usa **PORTA 3010** e não pode ser alterado. Se você tem outras aplicações na porta 3000, não há conflito.
+
+## Configuração no Coolify
 
 ### 1. Variáveis de Ambiente
 
@@ -12,29 +16,38 @@ PORT=3010
 NODE_ENV=production
 ```
 
-### 2. Health Check
+### 2. Health Check (CRÍTICO)
 
-Configure o Health Check no Traefik:
+**Configure EXATAMENTE assim:**
 - **Path:** `/health`
-- **Port:** `3010`
+- **Port:** `3010` (NÃO 3000)
 - **Interval:** `30s`
 - **Timeout:** `5s`
+- **Retries:** `3`
 
-### 3. Build Command
+### 3. Build & Start Commands
 
+**Build Command:**
 ```bash
 pnpm install && pnpm build
 ```
 
-### 4. Start Command
-
+**Start Command:**
 ```bash
 pnpm start
 ```
 
-## Porta Fixa
+### 4. Dockerfile
 
-O servidor está configurado para rodar **SEMPRE na porta 3010**. Não tente mudar a porta no Coolify.
+O projeto inclui um `Dockerfile` otimizado. Se o Coolify usar Docker:
+
+```bash
+docker build -t vehicle-showcase .
+docker run -p 3010:3010 \
+  -e DATABASE_URL="postgres://..." \
+  -e NODE_ENV=production \
+  vehicle-showcase
+```
 
 ## Banco de Dados PostgreSQL
 
@@ -56,22 +69,36 @@ O banco já contém:
 ## Teste Após Deploy
 
 ```bash
+# Health check
 curl https://veiculos.chatwoot.space/health
-```
 
-Deve retornar:
-```json
+# Deve retornar:
 {"status":"ok"}
+
+# Página inicial
+curl https://veiculos.chatwoot.space/
 ```
 
 ## Troubleshooting
 
-Se o site não carregar:
+### Erro: "Port 3000 is already in use"
+- **Solução:** O Coolify está tentando usar porta 3000. Configure Health Check para porta **3010**.
 
-1. Verifique se o Health Check está passando
-2. Verifique os logs do Coolify
-3. Confirme que DATABASE_URL está correto
-4. Confirme que a porta 5372 está acessível
+### Erro: "Connection refused on port 3010"
+- **Solução:** Verifique se DATABASE_URL está correto e a porta 5372 está acessível.
+
+### Erro: "Database connection failed"
+- **Solução:** Confirme que `sslmode=disable` está na DATABASE_URL.
+
+### Página em branco
+- **Solução:** Verifique os logs do Coolify. Pode ser erro de build ou conexão ao banco.
+
+## Arquivos de Configuração
+
+- `coolify.json` - Configuração específica do Coolify
+- `Dockerfile` - Build otimizado para produção
+- `.dockerignore` - Arquivos ignorados no build Docker
+- `COOLIFY_DEPLOYMENT.md` - Este arquivo
 
 ## Próximos Passos
 
