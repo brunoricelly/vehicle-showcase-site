@@ -1,6 +1,8 @@
 import { eq, desc, and, gte, lte, like, sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
+
+// PostgreSQL ONLY - No MySQL/TiDB support
 import {
   InsertUser,
   users,
@@ -23,17 +25,35 @@ import {
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
+let _client: pg.Pool | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      const client = postgres(process.env.DATABASE_URL);
-      _db = drizzle(client);
+      console.log("[Database] Initializing PostgreSQL connection...");
+      // Add sslmode=disable to connection string
+      const dbUrl = new URL(process.env.DATABASE_URL);
+      dbUrl.searchParams.set('sslmode', 'disable');
+      
+      _client = new pg.Pool({
+        connectionString: dbUrl.toString(),
+        max: 10,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+      });
+      _db = drizzle(_client);
+      
+      // Test connection
+      const result = await _client.query('SELECT 1');
       console.log("[Database] Connected to PostgreSQL successfully");
     } catch (error) {
-      console.warn("[Database] Failed to connect to PostgreSQL:", error);
+      console.error("[Database] Failed to connect to PostgreSQL:", error);
       _db = null;
+      if (_client) {
+        await _client.end();
+        _client = null;
+      }
     }
   }
   return _db;
